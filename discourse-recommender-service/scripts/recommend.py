@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-从分层缓存中推荐帖子
-- 合并 L1（热门）+ L2（分类）+ L3（新鲜）
-- 简单排序，去重，输出 Top N
+从用户所属领域推荐帖子（高级版）
+- 查用户所属领域
+- 从这些领域的 L1/L2/L3 中合并候选
+- 去重、排序、输出 Top N
 """
 import argparse
 import json
@@ -14,34 +15,55 @@ from typing import Dict, List, Any
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 
-from utils import load_config, load_cache
+from utils import load_config, load_cache, save_cache, sort_topics_by
 
 
-def load_all_caches(cache_dir: str) -> Dict[str, Any]:
-    """加载所有分层缓存"""
-    l1 = load_cache(os.path.join(cache_dir, "l1_hot.json")) or {"topics": []}
-    l2 = load_cache(os.path.join(cache_dir, "l2_category.json")) or {"categories": {}}
-    l3 = load_cache(os.path.join(cache_dir, "l3_fresh.json")) or {"topics": []}
-    return {
-        "l1": l1,
-        "l2": l2,
-        "l3": l3
-    }
+def get_user_domain_ids(username: str, user_domains_path: str) -> List[str]:
+    """获取用户所属的领域 ID 列表"""
+    user_domains = load_cache(user_domains_path) or {}
+    return user_domains.get(username, [])
 
 
-def collect_candidates(caches: Dict[str, Any]) -> List[Dict]:
-    """从各层收集候选帖子"""
+def load_domain_candidates(skill_dir: str, domain_ids: List[str]) -> List[Dict]:
+    """从指定领域加载候选帖子"""
     candidates = []
     
-    # L1: 热门池
-    candidates.extend(caches["l1"].get("topics", []))
+    for domain_id in domain_ids:
+        domain_dir = os.path.join(skill_dir, "domains", f"domain_{domain_id}")
+        
+        l1_path = os.path.join(domain_dir, "l1_hot.json")
+        l1 = load_cache(l1_path) or {"topics": []}
+        candidates.extend(l1.get("topics", []))
+        
+        l2_path = os.path.join(domain_dir, "l2_category.json")
+        l2 = load_cache(l2_path) or {"categories": {}}
+        for cat_data in l2.get("categories", {}).values():
+            candidates.extend(cat_data.get("topics", []))
+        
+        l3_path = os.path.join(domain_dir, "l3_fresh.json")
+        l3 = load_cache(l3_path) or {"topics": []}
+        candidates.extend(l3.get("topics", []))
     
-    # L2: 分类池（合并所有分类）
-    for cat_id, cat_data in caches["l2"].get("categories", {}).items():
+    return candidates
+
+
+def load_global_candidates(skill_dir: str) -> List[Dict]:
+    """加载全局冷启动候选"""
+    cache_dir = os.path.join(skill_dir, "cache")
+    candidates = []
+    
+    l1_path = os.path.join(cache_dir, "global_l1_hot.json")
+    l1 = load_cache(l1_path) or {"topics": []}
+    candidates.extend(l1.get("topics", []))
+    
+    l2_path = os.path.join(cache_dir, "global_l2_category.json")
+    l2 = load_cache(l2_path) or {"categories": {}}
+    for cat_data in l2.get("categories", {}).values():
         candidates.extend(cat_data.get("topics", []))
     
-    # L3: 新鲜池
-    candidates.extend(caches["l3"].get("topics", []))
+    l3_path = os.path.join(cache_dir, "global_l3_fresh.json")
+    l3 = load_cache(l3_path) or {"topics": []}
+    candidates.extend(l3.get("topics", []))
     
     return candidates
 
@@ -57,7 +79,6 @@ def deduplicate_and_rank(topics: List[Dict]) -> List[Dict]:
             seen_ids.add(tid)
             unique_topics.append(topic)
     
-    # 简单排序：新鲜度（默认按原顺序） + 热度
     def score(topic: Dict) -> float:
         likes = topic.get("like_count", 0)
         posts = topic.get("posts_count", 0)
@@ -89,7 +110,7 @@ def print_recommendations(topics: List[Dict], base_url: str, top_k: int):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="从分层缓存推荐帖子")
+    parser = argparse.ArgumentParser(description="从用户所属领域推荐帖子（高级版）")
     parser.add_argument("--config", required=True, help="配置文件路径")
     parser.add_argument("--username", required=True, help="目标用户名")
     parser.add_argument("--top", type=int, default=10, help="推荐数量")
@@ -103,24 +124,26 @@ def main():
     else:
         skill_dir = Path(SCRIPT_DIR).parent
     
-    cache_dir = os.path.join(skill_dir, "cache")
-    
     print("="*60)
-    print("Discourse 推荐服务")
+    print("Discourse 推荐服务（高级版）")
     print("="*60)
     print(f"目标用户: {args.username}")
     print(f"推荐数量: {args.top}")
     
     config = load_config(args.config)
-    caches = load_all_caches(cache_dir)
     
-    print(f"\n加载缓存:")
-    print(f"  L1（热门）: {len(caches['l1'].get('topics', []))} 帖")
-    print(f"  L2（分类）: {len(caches['l2'].get('categories', {}))} 个分类")
-    print(f"  L3（新鲜）: {len(caches['l3'].get('topics', []))} 帖")
+    # 先尝试用领域模式
+    user_domains_path = os.path.join(skill_dir, "user_domains.json")
+    domain_ids = get_user_domain_ids(args.username, user_domains_path)
     
-    candidates = collect_candidates(caches)
-    print(f"\n候选池: {len(candidates)} 帖")
+    if domain_ids:
+        print(f"\n用户所属领域: {domain_ids}")
+        candidates = load_domain_candidates(skill_dir, domain_ids)
+        print(f"从领域加载候选: {len(candidates)} 帖")
+    else:
+        print(f"\n⚠️ 用户无领域映射，使用全局冷启动缓存")
+        candidates = load_global_candidates(skill_dir)
+        print(f"从全局加载候选: {len(candidates)} 帖")
     
     ranked = deduplicate_and_rank(candidates)
     print(f"去重后: {len(ranked)} 帖")
@@ -131,6 +154,7 @@ def main():
         result = {
             "username": args.username,
             "generated_at": None,
+            "domains": domain_ids,
             "recommendations": [
                 {
                     "id": t.get("id"),

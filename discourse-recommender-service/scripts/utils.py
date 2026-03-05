@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-工具函数模块
+工具函数模块（高级版）
 - 配置加载
-- 缓存读写
+- 缓存读写（全局+领域）
 - Discourse API 调用
+- 领域相关工具
 """
 import json
 import os
@@ -31,6 +32,16 @@ def load_cache(cache_path: str) -> Optional[Any]:
         with open(cache_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     return None
+
+
+def get_domain_dir(base_dir: str, domain_id: str) -> str:
+    """获取领域目录路径"""
+    return os.path.join(base_dir, "domains", f"domain_{domain_id}")
+
+
+def get_profile_path(base_dir: str, username: str) -> str:
+    """获取用户画像文件路径"""
+    return os.path.join(base_dir, "profiles", f"{username}.json")
 
 
 class DiscourseAPI:
@@ -67,11 +78,6 @@ class DiscourseAPI:
         data = self._get("/categories.json")
         return data.get('category_list', {}).get('categories', [])
     
-    def get_user_activity(self, username: str) -> List[Dict]:
-        """获取用户活动记录"""
-        data = self._get(f"/u/{username}.json")
-        return []
-    
     def get_topic(self, topic_id: int) -> Dict:
         """获取单个话题详情"""
         return self._get(f"/t/{topic_id}.json")
@@ -95,5 +101,22 @@ def sort_topics_by(topics: List[Dict], key: str, reverse: bool = True) -> List[D
     return sorted(topics, key=lambda t: t.get(key, 0), reverse=reverse)
 
 
+def extract_topic_features(topic: Dict) -> List[str]:
+    """从话题中提取特征（tags, 分类, 标题关键词）"""
+    features = []
+    
+    tags = topic.get('tags', [])
+    features.extend(tags)
+    
+    category_id = topic.get('category_id')
+    if category_id:
+        features.append(f"cat:{category_id}")
+    
+    title = topic.get('title', '')
+    features.extend(title.split()[:5])
+    
+    return features
+
+
 if __name__ == "__main__":
-    print("工具函数模块")
+    print("工具函数模块（高级版）")
