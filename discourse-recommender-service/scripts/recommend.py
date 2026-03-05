@@ -8,12 +8,13 @@ from pathlib import Path
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 
-from utils import load_config, load_cache
+from utils import load_config, load_cache, save_cache
 
 
 def main():
-    parser = argparse.ArgumentParser(description="从全局缓存推荐")
+    parser = argparse.ArgumentParser(description="从多领域缓存推荐")
     parser.add_argument("--config", required=True, help="配置文件路径")
+    parser.add_argument("--domain", help="指定领域 ID（可选，默认从所有领域推荐）")
     parser.add_argument("--top", type=int, default=5, help="推荐数量")
     parser.add_argument("--skill-dir", help="Skill 目录路径")
     
@@ -24,25 +25,35 @@ def main():
     else:
         skill_dir = Path(SCRIPT_DIR).parent
     
-    cache_dir = os.path.join(skill_dir, "cache")
+    domains_dir = os.path.join(skill_dir, "domains")
     
     print("="*60)
-    print("Discourse 推荐服务")
+    print("Discourse 推荐服务（多领域）")
     print("="*60)
     
     config = load_config(args.config)
     
+    domains_data = load_cache(os.path.join(skill_dir, "domains.json")) or {"domains": []}
+    all_domains = domains_data.get("domains", [])
+    
+    if args.domain:
+        target_domain_ids = [args.domain]
+    else:
+        target_domain_ids = [d["id"] for d in all_domains]
+    
+    print(f"\n从 {len(target_domain_ids)} 个领域加载候选...")
+    
     candidates = []
-    
-    l1 = load_cache(os.path.join(cache_dir, "global_l1_hot.json")) or {"topics": []}
-    candidates.extend(l1.get("topics", []))
-    
-    l2 = load_cache(os.path.join(cache_dir, "global_l2_category.json")) or {"categories": {}}
-    for cat_data in l2.get("categories", {}).values():
-        candidates.extend(cat_data.get("topics", []))
-    
-    l3 = load_cache(os.path.join(cache_dir, "global_l3_fresh.json")) or {"topics": []}
-    candidates.extend(l3.get("topics", []))
+    for domain_id in target_domain_ids:
+        domain_dir = os.path.join(domains_dir, f"domain_{domain_id}")
+        if not os.path.exists(domain_dir):
+            continue
+        
+        l1 = load_cache(os.path.join(domain_dir, "l1_hot.json")) or {"topics": []}
+        candidates.extend(l1.get("topics", []))
+        
+        l3 = load_cache(os.path.join(domain_dir, "l3_fresh.json")) or {"topics": []}
+        candidates.extend(l3.get("topics", []))
     
     seen_ids = set()
     unique = []
@@ -56,6 +67,8 @@ def main():
         return (topic.get("like_count", 0) * 2) + topic.get("posts_count", 0)
     
     unique.sort(key=score, reverse=True)
+    
+    print(f"\n候选: {len(candidates)} 帖，去重后: {len(unique)} 帖")
     
     print("\n" + "="*80)
     print("🎯 为您推荐的帖子".center(80))
