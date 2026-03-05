@@ -9,27 +9,29 @@ Discourse 论坛高级实时推荐服务。
 
 ## 核心架构
 
-**自动领域聚类 + 多领域分层缓存 + Webhook 驱动 + agent 审核 + 按需推荐**
+**冷启动：分类为领域 → 定时：自动领域聚类 + agent 审核 + 多领域分层缓存 + Webhook 驱动 + 按需推荐**
 
 ```
+冷启动（首次）:
+  用 Discourse 分类作为初始领域 → 初始化每个领域的 L1/L3 缓存
+
 定时任务（每天）:
-  收集所有用户画像 → 自动领域聚类 → agent 审核 → 更新领域定义
+  收集所有用户画像 → 自动领域聚类 → agent 审核 → 更新领域定义 → 重新初始化领域缓存
 
 Webhook 实时:
   新帖通知 → 分类到相关领域 → 更新对应领域的 L3 新鲜池
 
 用户请求时:
-  查用户所属领域 → 从这些领域的 L1/L2/L3 合并候选 → 按画像精排 → Top N
+  查用户所属领域 → 从这些领域的 L1/L3 合并候选 → 按画像精排 → Top N
 ```
 
 ## 多领域分层缓存设计
 
-每个领域有独立的三层缓存：
+每个领域有独立的两层缓存：
 
 | 层级 | 说明 | 容量 | 更新频率 |
 |------|------|------|---------|
-| L1 | 领域热门池 | 50 帖 | 每小时 |
-| L2 | 领域分类池 | 每类 30 帖 | 每 30 分钟 |
+| L1 | 领域热门池 | 50 帖 | 重新聚类/初始化时 |
 | L3 | 领域新鲜池 | 100 帖 | Webhook 实时 |
 
 ## 目录结构
@@ -43,23 +45,20 @@ discourse-recommender-service/
 ├── domains/                 # 每个领域一个子目录
 │   ├── domain_0/
 │   │   ├── l1_hot.json
-│   │   ├── l2_category.json
 │   │   └── l3_fresh.json
 │   ├── domain_1/
 │   │   ├── l1_hot.json
-│   │   ├── l2_category.json
 │   │   └── l3_fresh.json
 │   └── ...
 ├── profiles/                # 用户画像存储
 │   ├── user_001.json
 │   ├── user_002.json
 │   └── ...
-├── cache/                   # 全局/冷启动缓存
-│   ├── global_l1_hot.json
-│   ├── global_l2_category.json
-│   └── global_l3_fresh.json
+├── domains.json            # 领域定义
+├── user_domains.json       # 用户-领域映射
 └── scripts/
-    ├── init_cache.py        # 初始化全局/领域缓存
+    ├── init_cache.py        # 初始化（冷启动：分类为领域）
+    ├── build_user_profile.py # 为单个用户构建画像
     ├── cluster_domains.py   # 定时领域聚类 + agent 审核
     ├── webhook_handler.py   # Webhook 接收 + 分发更新
     ├── recommend.py         # 从用户所属领域推荐
@@ -88,20 +87,27 @@ discourse-recommender-service/
 
 ## 使用方式
 
-### 1. 初始化（首次）
+### 0. 构建用户画像（可选，用于聚类）
 
 ```bash
-# 初始化全局冷启动缓存
-python3 scripts/init_cache.py --config config/config.json --global-only
+# 为单个用户构建画像
+python3 scripts/build_user_profile.py --config config/config.json --username target_user
+```
+
+### 1. 冷启动初始化（首次）
+
+```bash
+# 用分类作为初始领域，初始化缓存
+python3 scripts/init_cache.py --config config/config.json
 ```
 
 ### 2. 定时领域聚类（每天一次，Cron）
 
 ```bash
-# 聚类 + 生成待审核文件
+# 步骤 1: 收集画像 + 聚类 + 生成待审核文件
 python3 scripts/cluster_domains.py --config config/config.json --output pending_audit.json
 
-# agent 审核后，应用新领域划分
+# 步骤 2: agent 审核后，应用新领域划分
 python3 scripts/cluster_domains.py --config config/config.json --approve pending_audit.json
 ```
 
@@ -116,7 +122,11 @@ python3 scripts/webhook_handler.py --config config/config.json --payload webhook
 ### 4. 为用户推荐
 
 ```bash
-python3 scripts/recommend.py --config config/config.json --username target_user --top 10
+# 从所有领域推荐
+python3 scripts/recommend.py --config config/config.json --top 10
+
+# 从指定领域推荐
+python3 scripts/recommend.py --config config/config.json --domain 4 --top 10
 ```
 
 ## 注意事项
@@ -124,5 +134,5 @@ python3 scripts/recommend.py --config config/config.json --username target_user 
 - 配置文件 `config/config.json` 包含敏感信息，请勿提交到版本控制
 - 领域缓存位于 `domains/` 目录，可随时删除重建
 - 用户画像位于 `profiles/` 目录
-- 冷启动时（无领域）使用 `cache/` 下的全局池
+- 冷启动时（无领域定义）使用分类作为初始领域
 - API Key 需要有足够权限（读取帖子、用户信息）
