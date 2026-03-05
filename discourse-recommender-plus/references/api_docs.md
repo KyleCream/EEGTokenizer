@@ -20,8 +20,9 @@ GET /users/{username}.json
 
 ### 获取用户活动
 ```
-GET /user_actions.json?username={username}&limit=100
+GET /u/{username}/activity.json
 ```
+注意：不是 `/user_actions.json`，是 `/u/{username}/activity.json`
 
 ### 获取用户发布的话题
 ```
@@ -130,6 +131,20 @@ Content-Type: application/json
   "raw": "回复内容"
 }
 ```
+
+### 创建站内信（Private Message）
+```
+POST /posts.json
+Content-Type: application/json
+
+{
+  "title": "站内信标题",
+  "raw": "站内信内容（Markdown）",
+  "target_recipients": "目标用户名",
+  "archetype": "private_message"
+}
+```
+注意：用 `target_recipients`，不是 `target_usernames`
 
 ## 响应字段说明
 
