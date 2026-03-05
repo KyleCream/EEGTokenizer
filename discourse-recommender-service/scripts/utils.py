@@ -68,6 +68,66 @@ class DiscourseAPI:
 def sort_topics_by(topics, key, reverse=True):
     return sorted(topics, key=lambda t: t.get(key, 0), reverse=reverse)
 
+
+def send_discourse_pm(topics, base_url, api_key, api_username, target_username, top_k=5):
+    """发送 Discourse 站内信"""
+    import requests
+    
+    pm_content = "## 🤖 为你推荐的帖子\n\n"
+    
+    for i, topic in enumerate(topics[:top_k], 1):
+        title = topic.get('title', '无标题')
+        topic_id = topic.get('id')
+        url = f"{base_url}/t/{topic_id}"
+        posts = topic.get('posts_count', 0)
+        likes = topic.get('like_count', 0)
+        
+        reasons = []
+        if likes > 0:
+            reasons.append(f"点赞 {likes}")
+        if posts > 0:
+            reasons.append(f"回复 {posts}")
+        if likes + posts > 5:
+            reasons.append("热度不错")
+        if not reasons:
+            reasons.append("综合推荐")
+        
+        pm_content += f"{i}. **[{title}]({url})**\n"
+        pm_content += f"   - 回复: {posts} | 点赞: {likes}\n"
+        pm_content += f"   - 理由: {', '.join(reasons)}\n\n"
+    
+    pm_content += "\n---\n*由 OpenClaw 自动推荐*"
+    
+    headers = {
+        "Api-Key": api_key,
+        "Api-Username": api_username,
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+    
+    pm_data = {
+        "title": "🤖 为你推荐的帖子",
+        "raw": pm_content,
+        "target_recipients": target_username,
+        "archetype": "private_message"
+    }
+    
+    try:
+        response = requests.post(f"{base_url}/posts.json", headers=headers, json=pm_data)
+        if response.status_code == 200:
+            result = response.json()
+            topic_id = result.get('topic_id')
+            print(f"✅ 站内信发送成功！")
+            print(f"   链接: {base_url}/t/{topic_id}")
+            return True
+        else:
+            print(f"❌ 站内信发送失败: {response.status_code}")
+            print(f"   响应: {response.text}")
+            return False
+    except Exception as e:
+        print(f"❌ 站内信发送异常: {e}")
+        return False
+
 try:
     import jieba
     JIEBA_AVAILABLE = True

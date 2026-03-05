@@ -8,7 +8,7 @@ from pathlib import Path
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 
-from utils import load_config, load_cache, save_cache
+from utils import load_config, load_cache, save_cache, send_discourse_pm
 
 
 def main():
@@ -17,6 +17,7 @@ def main():
     parser.add_argument("--domain", help="指定领域 ID（可选，默认从所有领域推荐）")
     parser.add_argument("--top", type=int, default=5, help="推荐数量")
     parser.add_argument("--skill-dir", help="Skill 目录路径")
+    parser.add_argument("--send-pm", help="通过 Discourse 站内信发送给指定用户")
     
     args = parser.parse_args()
     
@@ -98,6 +99,18 @@ def main():
     print("\n" + "="*80)
     print("✅ 推荐完成！")
     print("="*80)
+    
+    if args.send_pm:
+        print("\n[推送] 发送 Discourse 站内信...")
+        config = load_config(args.config)
+        send_discourse_pm(
+            unique,
+            config["discourse_url"],
+            config["api_key"],
+            config["api_username"],
+            args.send_pm,
+            args.top
+        )
 
 
 if __name__ == "__main__":
