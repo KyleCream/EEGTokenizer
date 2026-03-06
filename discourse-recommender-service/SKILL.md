@@ -177,14 +177,27 @@ discourse-recommender-service/
 
 ---
 
-## 基础设施功能
+## 初始化流程（必须执行！）
 
-### 1. 冷启动初始化（首次）
+### 何时需要初始化
+1. **首次使用技能时** - 必须执行冷启动初始化
+2. **领域更新后** - 执行定时聚类后需要重新初始化
+3. **缓存丢失/损坏时** - 重新初始化缓存
+4. **论坛有大量新内容时** - 定期重新初始化（每周一次）
+
+### 1. 冷启动初始化（首次使用前必须执行！）
 
 ```bash
 # 用分类作为初始领域，初始化缓存
 python3 scripts/init_cache.py --config config/config.json
 ```
+
+**初始化会做什么：**
+- 获取 Discourse 所有分类作为初始领域
+- 拉取最新和热门帖子
+- 为每个领域创建 L1（热门池）和 L3（新鲜池）缓存
+- 生成 domains.json 领域定义文件
+- 初始化完成后才能进行推荐
 
 ### 2. 定时领域聚类（每天一次，Cron）
 
@@ -218,10 +231,18 @@ python3 scripts/recommend.py --config config/config.json --domain 4 --top 10
 
 ## 交互式推荐功能
 
+### 前置检查
+⚠️ **首次使用前必须先执行冷启动初始化！**
+```bash
+python3 scripts/init_cache.py --config config/config.json
+```
+
 ### 完整流程
 
 ```
 用户主动问询
+    ↓
+步骤 0：检查是否已初始化（首次必须执行冷启动）
     ↓
 步骤 1：获取用户ID/用户名
     ↓
@@ -390,10 +411,11 @@ python3 scripts/update_profile_after_recommend.py \
 
 ## 注意事项
 
+- ⚠️ **首次使用前必须执行冷启动初始化**：`python3 scripts/init_cache.py --config config/config.json`
 - **推荐理由必须由 Agent 手动编写**，禁止使用代码自动生成的模板理由
 - **找帖子从用户感兴趣的领域找**，不是简单关键词匹配
 - 配置文件 `config/config.json` 包含敏感信息，请勿提交到版本控制
-- 领域缓存位于 `domains/` 目录，可随时删除重建
+- 领域缓存位于 `domains/` 目录，可随时删除重建，重建需要重新初始化
 - 用户画像位于 `profiles/` 目录
 - 冷启动时（无领域定义）使用分类作为初始领域
 - API Key 需要有足够权限（读取帖子、用户信息）
