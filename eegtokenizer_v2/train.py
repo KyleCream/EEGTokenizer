@@ -203,15 +203,14 @@ def main():
             original_dir = os.getcwd()
             os.chdir(project_root)
 
-            # 添加训练结果
-            subprocess.run(['git', 'add', 'eegtokenizer_v2/checkpoints/'], check=True, capture_output=True)
+            # 只添加日志目录（不添加 checkpoints，避免推送大的 .pth 文件）
             subprocess.run(['git', 'add', 'eegtokenizer_v2/logs/'], check=True, capture_output=True)
             
             # 检查是否有变更
             result = subprocess.run(['git', 'diff', '--cached', '--quiet'], capture_output=True)
             if result.returncode == 0:
                 # 有变更，提交并推送
-                commit_msg = f"训练结果: {config['model']['tokenizer']['name']}_acc_{trainer.best_val_acc:.4f}"
+                commit_msg = f"训练日志: {config['model']['tokenizer']['name']}_acc_{trainer.best_val_acc:.4f}"
                 subprocess.run(['git', 'commit', '-m', commit_msg], check=True, capture_output=True)
                 
                 # 推送（最多重试3次）

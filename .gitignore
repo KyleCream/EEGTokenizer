@@ -20,6 +20,12 @@ eeg-auto-iteration/logs/
 eegtokenizer_v2/logs/
 eegtokenizer_v2/checkpoints/
 
+# 模型文件（不保存到 Git）
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+
 # 训练标记文件
 .needs_training
 

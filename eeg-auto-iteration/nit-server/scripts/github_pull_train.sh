@@ -4,6 +4,7 @@
 # GitHub Pull + 自动训练脚本（标记文件控制版本）
 # 功能：检查标记文件，如果存在则运行训练
 # 标记文件：.needs_training
+# 注意：只推送日志，不推送 .pth 模型文件
 ###############################################################################
 
 # 加载配置
@@ -95,18 +96,16 @@ if [ $? -eq 0 ]; then
     log "删除训练标记文件"
     rm -f "$TRAINING_FLAG"
     
-    # 推送结果回 GitHub
-    log "推送训练结果回 GitHub..."
+    # 只推送日志（不推送 .pth 模型文件）
+    log "推送训练日志到 GitHub..."
     
-    # 添加训练结果（检查点、日志、历史）
-    git add eegtokenizer_v2/checkpoints/ >> "$CRON_LOG" 2>&1
+    # 只添加日志目录
     git add eegtokenizer_v2/logs/ >> "$CRON_LOG" 2>&1
     git add *.log >> "$CRON_LOG" 2>&1
-    git add $TRAINING_FLAG >> "$CRON_LOG" 2>&1
     
     # 提交
-    git commit -m "训练结果: $(date '+%Y-%m-%d %H:%M:%S')
-
+    git commit -m "训练日志: $(date '+%Y-%m-%d %H:%M:%S')" >> "$CRON_LOG" 2>&1
+    
     # 推送
     MAX_RETRIES=3
     RETRY_COUNT=0

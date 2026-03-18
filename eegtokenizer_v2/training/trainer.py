@@ -225,40 +225,31 @@ class Trainer:
                 f"Val Loss: {val_metrics['loss']:.4f}, Acc: {val_metrics['accuracy']:.4f}"
             )
 
-            # 保存最佳模型
+            # 记录最佳模型
             if val_metrics['accuracy'] > self.best_val_acc:
                 self.best_val_acc = val_metrics['accuracy']
-                self.save_checkpoint('best_model.pth')
-                logger.info(f"  ✓ 保存最佳模型 (val_acc: {self.best_val_acc:.4f})")
+                logger.info(f"  ✓ 最佳模型: epoch {epoch}, val_acc: {self.best_val_acc:.4f}")
 
-            # 定期保存
-            if (epoch + 1) % 10 == 0:
-                self.save_checkpoint(f'checkpoint_epoch_{epoch+1}.pth')
-
-        # 保存训练历史
+        # 保存训练历史（不保存 .pth 文件，避免推送困难）
         self.save_training_history()
 
         logger.info(f"训练完成！最佳验证准确率: {self.best_val_acc:.4f}")
 
-    def save_checkpoint(self, filename: str):
-        """保存检查点"""
-        checkpoint_path = self.save_dir / filename
-
-        torch.save({
-            'epoch': self.current_epoch,
-            'model_state_dict': self.model.state_dict(),
-            'optimizer_state_dict': self.optimizer.state_dict(),
-            'best_val_acc': self.best_val_acc,
-            'config': self.config
-        }, checkpoint_path)
-
-        logger.info(f"检查点已保存: {checkpoint_path}")
-
     def save_training_history(self):
-        """保存训练历史"""
-        history_path = self.save_dir / 'training_history.json'
+        """保存训练历史（只保存 JSON，不保存 .pth 文件）"""
+        # 创建日志目录（项目根目录下的 logs/）
+        project_root = Path(__file__).parent.parent.parent
+        logs_dir = project_root / 'eegtokenizer_v2' / 'logs'
+        logs_dir.mkdir(parents=True, exist_ok=True)
+
+        # 保存训练历史到项目根目录
+        history_path = logs_dir / f'training_history_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
 
         with open(history_path, 'w') as f:
-            json.dump(self.training_history, f, indent=2)
+            json.dump({
+                'training_history': self.training_history,
+                'best_val_acc': float(self.best_val_acc),
+                'config': self.config
+            }, f, indent=2)
 
         logger.info(f"训练历史已保存: {history_path}")
