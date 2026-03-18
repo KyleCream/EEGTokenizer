@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ###############################################################################
-# GitHub Pull + 自动训练脚本（每次都运行版本）
-# 功能：每次都拉取最新代码并运行训练（不管有没有更新）
-# 间隔：每 30 分钟运行一次
+# GitHub Pull + 自动训练脚本（标记文件控制版本）
+# 功能：检查标记文件，如果存在则运行训练
+# 标记文件：.needs_training
 ###############################################################################
 
 # 加载配置
@@ -17,7 +17,7 @@ log() {
 }
 
 log "========================================"
-log "自动训练脚本启动（每次都运行）"
+log "自动训练脚本启动（标记文件控制）"
 log "========================================"
 
 # 进入项目目录
@@ -26,7 +26,27 @@ cd "$PROJECT_DIR" || {
     exit 1
 }
 
-# 总是拉取最新代码
+# 标记文件路径
+TRAINING_FLAG=".needs_training"
+
+# 检查标记文件
+if [ ! -f "$TRAINING_FLAG" ]; then
+    log "没有检测到训练标记文件 ($TRAINING_FLAG)，退出"
+    exit 0
+fi
+
+log "检测到训练标记文件，准备运行训练..."
+
+# 读取标记文件内容（可能包含训练参数）
+TRAINING_PARAMS=$(cat "$TRAINING_FLAG" 2>/dev/null)
+
+if [ -n "$TRAINING_PARAMS" ]; then
+    log "训练参数: $TRAINING_PARAMS"
+    # 如果标记文件有内容，使用其中的参数
+    TRAIN_ARGS="$TRAINING_PARAMS"
+fi
+
+# 拉取最新代码
 log "拉取最新代码..."
 git fetch origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
 git reset --hard origin/$GIT_BRANCH >> "$CRON_LOG" 2>&1
@@ -70,16 +90,21 @@ python $TRAIN_SCRIPT $TRAIN_ARGS >> "$TRAINING_LOG" 2>&1
 
 if [ $? -eq 0 ]; then
     log "训练完成"
+    
+    # 训练成功后删除标记文件
+    log "删除训练标记文件"
+    rm -f "$TRAINING_FLAG"
+    
+    # 推送结果回 GitHub（可选）
+    log "推送训练结果回 GitHub..."
+    git add eegtokenizer_v2/logs/ eegtokenizer_v2/checkpoints/ $TRAINING_FLAG >> "$CRON_LOG" 2>&1
+    git commit -m "训练结果: $(date '+%Y-%m-%d %H:%M:%S')" >> "$CRON_LOG" 2>&1
+    git push origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
 else
     log "错误：训练失败，查看日志: $TRAINING_LOG"
+    log "保留训练标记文件以便下次重试"
     exit 1
 fi
-
-# 推送结果回 GitHub（可选）
-log "推送训练结果回 GitHub..."
-git add eegtokenizer_v2/logs/ eegtokenizer_v2/checkpoints/ >> "$CRON_LOG" 2>&1
-git commit -m "训练结果: $(date '+%Y-%m-%d %H:%M:%S')" >> "$CRON_LOG" 2>&1
-git push origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
 
 log "========================================"
 log "脚本执行完成"
