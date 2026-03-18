@@ -70,14 +70,14 @@ CRON_LOG="$LOG_DIR/cron_$(date +%Y%m%d).log"
 # Cron 轮询配置
 
 # 检查间隔（分钟）
-CHECK_INTERVAL=5
+CHECK_INTERVAL=30
 
 # ==================== 使用说明 ====================
 # 1. 修改上面的配置（特别是 GITHUB_REPO 和 PROJECT_DIR）
 # 2. 确保 Git 已配置并可以访问 GitHub
 # 3. 设置 Cron：
 #    crontab -e
-#    添加：*/5 * * * * /home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/scripts/github_pull_train.sh >> /home/zengkai/eeg-auto-logs/cron.log 2>&1
+#    添加：*/30 * * * * /home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/scripts/github_pull_train.sh >> /home/zengkai/eeg-auto-logs/cron.log 2>&1
 # 4. 查看日志：
 #    tail -f ~/eeg-auto-logs/training_*.log
 #    tail -f ~/eeg-auto-logs/cron.log

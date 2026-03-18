@@ -1,7 +1,7 @@
 # GitHub + Cron 轮询方案 - 完整指南
 
 **日期：** 2026-03-18
-**方案：** GitHub + Cron 轮询（不需要 SSH 隧道）
+**方案：** GitHub + Cron 轮询（30分钟间隔）
 
 ---
 
@@ -15,13 +15,22 @@
 云服务器
     ↓ git push
 GitHub（Single Source of Truth）
-    ↓ git pull（每 5 分钟）
+    ↓ git pull（每 30 分钟）
 nit 执行训练
     ↓ git push（结果）
 GitHub
     ↓ git pull
 云服务器查看结果
 ```
+
+### 运行方式
+
+**每次都运行训练**（不管有没有更新）
+
+- ✅ **每次 Cron 触发都会运行训练**
+- ✅ **持续尝试不同的配置**
+- ✅ **自动重试（上次失败会自动重试）**
+- ✅ **适合持续探索和实验**
 
 ---
 
@@ -33,6 +42,7 @@ GitHub
 - ✅ **代码有版本控制**
 - ✅ **GitHub 是 Single Source of Truth**
 - ✅ **实现简单**
+- ✅ **每 30 分钟自动运行训练**
 
 ---
 
@@ -49,40 +59,7 @@ cd ~/EEGTokenizer
 
 ---
 
-### 步骤 2：修改配置文件
-
-```bash
-# 在 nit 上
-cd ~/EEGTokenizer/eeg-auto-iteration/nit-server
-
-# 编辑配置文件
-nano config/config.sh
-```
-
-**必须修改的配置：**
-
-```bash
-# GitHub 仓库 URL
-GITHUB_REPO="https://github.com/KyleCream/EEGTokenizer.git"
-
-# 本地项目路径
-PROJECT_DIR="$HOME/EEGTokenizer"
-
-# Conda 环境名称
-CONDA_ENV_NAME="mamba_cuda121"
-
-# Python 解释器路径
-PYTHON_PATH="$HOME/conda/envs/$CONDA_ENV_NAME/bin/python"
-
-# 激活 Conda 环境的脚本
-CONDA_INIT="$HOME/conda/etc/profile.d/conda.sh"
-```
-
-**保存退出（`Ctrl+O`，`Enter`，`Ctrl+X`）**
-
----
-
-### 步骤 3：运行安装脚本
+### 步骤 2：运行一键安装脚本
 
 ```bash
 # 在 nit 上
@@ -95,63 +72,69 @@ chmod +x install_cron.sh
 1. 检查配置
 2. 克隆 GitHub 仓库
 3. 设置脚本权限
-4. 安装 Cron 任务
-5. 测试运行
+4. 安装 Cron 任务（30分钟间隔）
+5. 询问是否立即测试运行
 
 ---
 
-### 步骤 4：验证安装
+### 步骤 3：验证安装
 
 ```bash
 # 在 nit 上
 
 # 查看 Cron 任务
 crontab -l
-
-# 应该看到类似这样的输出：
-# */5 * * * * /home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/scripts/github_pull_train.sh >> /home/zengkai/eeg-auto-logs/cron.log 2>&1
 ```
+
+**应该看到：**
+```
+*/30 * * * * /home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/scripts/github_pull_train.sh >> /home/zengkai/eeg-auto-logs/cron.log 2>&1
+```
+
+**说明：每 30 分钟运行一次（00分, 30分）**
 
 ---
 
-### 步骤 5：测试首次运行
+## 🔄 工作原理
 
-```bash
-# 在云服务器上
-cd ~/EEGTokenizer
+### 自动化流程
 
-# 修改配置（触发更新）
-vim eegtokenizer_v2/configs/experiments.yaml
-
-# 提交并推送
-git add .
-git commit -m "测试 GitHub + Cron 方案"
-git push origin main
+```
+1. Cron 每 30 分钟触发一次（00分, 30分）
+   ↓
+2. github_pull_train.sh 运行
+   ↓
+3. 拉取最新代码（不管有没有更新）
+   ↓
+4. 激活 mamba_cuda121 环境
+   ↓
+5. 运行训练
+   ↓
+6. 推送结果回 GitHub
+   ↓
+7. 等待下一次触发（30分钟后）
 ```
 
-**等待 5 分钟，nit 会自动：**
-1. 检查 GitHub 更新
-2. Pull 最新代码
-3. 运行训练
-4. 推送结果回 GitHub
+### 运行时间
+
+**每 30 分钟运行一次：**
+- 00:00
+- 00:30
+- 01:00
+- 01:30
+- ...
+- 23:30
 
 ---
 
 ## 📝 使用方法
 
-### 在云服务器上触发训练
+### 在 nit 上手动触发训练
 
 ```bash
-# 在云服务器上
-cd ~/EEGTokenizer
-
-# 修改代码或配置
-vim eegtokenizer_v2/configs/experiments.yaml
-
-# 提交并推送
-git add .
-git commit -m "添加新的训练任务"
-git push origin main
+# 在 nit 上
+cd ~/EEGTokenizer/eeg-auto-iteration/nit-server/scripts
+./github_pull_train.sh
 ```
 
 ---
@@ -193,16 +176,31 @@ ls -lh eegtokenizer_v2/checkpoints/
 
 ### Cron 轮询间隔
 
-**默认：每 5 分钟检查一次**
+**默认：** 每 30 分钟检查一次
 
-修改配置文件中的 `CHECK_INTERVAL`：
+**运行时间：** 00分, 30分（每小时两次）
+
+**修改间隔：**
 
 ```bash
-# nit-server/config/config.sh
+# 在 nit 上
+crontab -e
 
-# 检查间隔（分钟）
-CHECK_INTERVAL=5  # 可以改为 1, 2, 3, 5, 10, 15, 30
+# 修改间隔（例如改为每 15 分钟）
+# */30 * * * * ...
+# 改为：
+# */15 * * * * ...
+
+# 保存退出
 ```
+
+**常用间隔：**
+- `*/5 * * * *` - 每 5 分钟
+- `*/15 * * * *` - 每 15 分钟
+- `*/30 * * * *` - 每 30 分钟（默认）
+- `0 */1 * * *` - 每 1 小时
+- `0 */2 * * *` - 每 2 小时
+- `0 */6 * * *` - 每 6 小时
 
 ---
 
@@ -212,7 +210,7 @@ CHECK_INTERVAL=5  # 可以改为 1, 2, 3, 5, 10, 15, 30
 
 **Python 路径：** `/home/zengkai/conda/envs/mamba_cuda121/bin/python`
 
-**如果使用其他环境，修改配置：**
+**修改配置：**
 
 ```bash
 # nit-server/config/config.sh
@@ -229,33 +227,28 @@ CONDA_INIT="$HOME/conda/etc/profile.d/conda.sh"
 
 ---
 
-### 数据集配置
+### 训练配置
 
-**默认配置：**
-
-```bash
-# 数据目录
-DATA_DIR="./data/BCI_IV_2a"
-
-# 被试 ID
-SUBJECT_ID="A01"
-
-# 时间窗口（秒）
-WIN_TMIN=0.0
-WIN_TMAX=4.0
-```
-
-**修改训练配置：**
+**修改训练参数：**
 
 ```bash
 # eegtokenizer_v2/configs/experiments.yaml
 
-data:
-  dataset: "BCI_IV_2a"
-  data_dir: "./data/BCI_IV_2a"
-  subject_id: "A01"
-  sessions: "train"  # 'train' / 'test' / 'both'
-  win_sel: [0.0, 4.0]  # 时间窗口，单位秒
+adc_4bit:
+  model:
+    tokenizer:
+      num_bits: 4
+      quant_type: "scalar"
+      agg_type: "mean"
+  
+  data:
+    subject_id: "A01"
+    sessions: "train"
+    win_sel: [0.0, 4.0]
+  
+  training:
+    epochs: 100
+    batch_size: 32
 ```
 
 ---
@@ -277,6 +270,9 @@ sudo systemctl status cron
 
 # 查看 Cron 任务
 crontab -l
+
+# 查看 Cron 日志（系统日志）
+sudo grep CRON /var/log/syslog | tail -20
 ```
 
 ---
@@ -338,6 +334,20 @@ crontab -l
 
 ---
 
+### 查看下次运行时间
+
+```bash
+# 在 nit 上
+
+# 查看当前时间
+date
+
+# 计算下次运行时间
+python3 -c "from datetime import datetime, timedelta; now=datetime.now(); next_run=(now.minute//30+1)*30; print(f'下次运行: {now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1 if now.minute>=30 else 0, minutes=30 if now.minute<30 else 0)}')"
+```
+
+---
+
 ### 删除 Cron 任务
 
 ```bash
@@ -362,7 +372,129 @@ cd ~/EEGTokenizer/eeg-auto-iteration/nit-server/scripts
 
 ```bash
 # 在 nit 上
-tail -f ~/eeg-auto-logs/training_*.log
+tail -f ~/eeg-auto-logs/training_$(date +%Y%m%d).log
+```
+
+---
+
+## 🎯 完整示例
+
+### 示例 1：首次设置
+
+```bash
+# 在 nit 上
+
+# 1. 克隆仓库
+cd ~
+git clone https://github.com/KyleCream/EEGTokenizer.git
+cd ~/EEGTokenizer
+
+# 2. 运行安装脚本
+cd eeg-auto-iteration/nit-server/scripts
+chmod +x install_cron.sh
+./install_cron.sh
+
+# 3. 确认安装
+crontab -l
+
+# 4. 查看下次运行时间
+date
+```
+
+---
+
+### 示例 2：手动触发训练
+
+```bash
+# 在 nit 上
+cd ~/EEGTokenizer/eeg-auto-iteration/nit-server/scripts
+./github_pull_train.sh
+```
+
+---
+
+### 示例 3：查看训练结果
+
+```bash
+# 在 nit 上
+
+# 1. 查看训练日志
+tail -f ~/eeg-auto-logs/training_$(date +%Y%m%d).log
+
+# 2. 查看检查点
+ls -lh ~/EEGTokenizer/eegtokenizer_v2/checkpoints/
+
+# 3. 查看结果
+ls -lh ~/EEGTokenizer/eegtokenizer_v2/logs/
+```
+
+---
+
+## ⚠️ 注意事项
+
+### 1. 确保环境正确
+
+```bash
+# 在 nit 上
+
+# 激活环境
+conda activate mamba_cuda121
+
+# 验证 Python
+python --version
+which python
+# 应该输出：/home/zengkai/conda/envs/mamba_cuda121/bin/python
+
+# 验证依赖
+python -c "import torch; print(torch.__version__)"
+python -c "import mne; print(mne.__version__)"
+```
+
+---
+
+### 2. 确保数据文件正确
+
+```bash
+# 在 nit 上
+
+# 检查数据文件
+ls -lh ~/EEGTokenizer/data/BCI_IV_2a/A01T.gdf
+ls -lh ~/EEGTokenizer/data/BCI_IV_2a/A01E.gdf
+
+# 应该看到文件存在
+```
+
+---
+
+### 3. 确保脚本有执行权限
+
+```bash
+# 在 nit 上
+
+cd ~/EEGTokenizer/eeg-auto-iteration/nit-server/scripts
+
+# 检查权限
+ls -la *.sh
+
+# 如果没有执行权限，添加：
+chmod +x *.sh
+```
+
+---
+
+### 4. 监控磁盘空间
+
+```bash
+# 在 nit 上
+
+# 查看磁盘空间
+df -h
+
+# 查看日志目录大小
+du -sh ~/eeg-auto-logs/
+
+# 清理旧日志（保留最近7天）
+find ~/eeg-auto-logs/ -name "*.log" -mtime +7 -delete
 ```
 
 ---
@@ -375,13 +507,12 @@ tail -f ~/eeg-auto-logs/training_*.log
 - ✅ 不需要 SSH 隧道
 - ✅ 不需要管理员权限
 - ✅ 代码有版本控制
-- ✅ 自动轮询和训练
+- ✅ 每 30 分钟自动运行训练
+- ✅ 持续探索和实验
 
-**开始使用：**
-1. 在云服务器上修改代码
-2. `git push` 到 GitHub
-3. 等待 5 分钟
-4. nit 自动运行训练
+**运行方式：**
+- 自动：每 30 分钟运行一次
+- 手动：随时可以手动触发
 
 ---
 
