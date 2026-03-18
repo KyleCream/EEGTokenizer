@@ -1,0 +1,180 @@
+"""
+配置管理
+
+包含模型配置和评估配置
+"""
+
+# 基线配置：时空频编码器（STF）
+baseline_stf:
+  model:
+    type: "STF"
+    tokenizer:
+      name: "EEGSTFEncoder"
+      window_length: 250
+      step_length: 125
+      patch_enabled: true
+      merge_enabled: false
+      n_head: 8
+    classifier:
+      type: "Transformer"
+      num_classes: 4
+      nhead: 8
+      num_layers: 2
+      dropout: 0.1
+
+  data:
+    dataset: "BCI_IV_2a"
+    data_dir: "./data/BCI_IV_2a"
+    data_mode: "single"
+    subject_id: "A01"
+    train_ratio: 0.7
+    val_ratio: 0.15
+    normalization: "z_score"
+    batch_size: 32
+    num_workers: 0
+
+  training:
+    epochs: 100
+    optimizer:
+      name: "Adam"
+      lr: 0.001
+    scheduler:
+      name: "CosineAnnealingLR"
+      T_max: 50
+    save_dir: "./checkpoints/baseline_stf"
+
+# ADC 4bit 配置（核心探索）
+adc_4bit:
+  model:
+    type: "ADC"
+    tokenizer:
+      name: "ADCTokenizer"
+      window_length: 250
+      step_length: 125
+      num_bits: 4
+      quant_type: "scalar"
+      agg_type: "mean"
+    classifier:
+      type: "Transformer"
+      num_classes: 4
+      nhead: 8
+      num_layers: 2
+      dropout: 0.1
+
+  data:
+    dataset: "BCI_IV_2a"
+    data_dir: "./data/BCI_IV_2a"
+    data_mode: "single"
+    subject_id: "A01"
+    train_ratio: 0.7
+    val_ratio: 0.15
+    normalization: "z_score"
+    batch_size: 32
+    num_workers: 0
+
+  training:
+    epochs: 100
+    optimizer:
+      name: "Adam"
+      lr: 0.001
+    scheduler:
+      name: "CosineAnnealingLR"
+      T20max: 50
+    save_dir: "./checkpoints/adc_4bit"
+
+  # 评估配置
+  evaluation:
+    reconstruction: true
+    probe_tasks: true
+    spectral: true
+
+# ADC 8bit 配置
+adc_8bit:
+  model:
+    type: "ADC"
+    tokenizer:
+      name: "ADCTizer"
+      window_length: 250
+      step_length: 125
+      num_bits: 8
+      quant_type: "scalar"
+      agg_type: "mean"
+    classifier:
+      type: "Transformer"
+      num_classes:  4
+      nhead: 8
+      num_layers: 2
+      dropout: 0.1
+
+  data:
+    dataset: "BCI_IV_2a"
+    data_dir: "./data/BCI_IV_2a"
+    data_mode: "single"
+    subject_id: "A01"
+    train_ratio: 0.7
+    val_ratio: 0.15
+    normalization: "z_score"
+    batch_size: 32
+    num_workers: 0
+
+  training:
+    epochs: 100
+    optimizer:
+      name: "Adam"
+      lr: 0.001
+    scheduler:
+      name: "CosineAnnealingLR"
+      T_max: 50
+    save_dir: "./checkpoints/adc_8bit"
+
+  # 评估配置
+  evaluation:
+    reconstruction: true
+    probe_tasks: true
+    spectral: true
+
+# ADC 注意力聚合配置
+adc_attention:
+  model:
+    type: "ADC"
+    tokenizer:
+      name: "ADCTokenizer"
+      window_length: 250
+      step_length: 125
+      num_bits: 4
+      quant_type: "scalar"
+      agg_type: "attention"
+      n_head: 8
+    classifier:
+      type: "Transformer"
+      num_classes: 4
+      nhead: 8
+      num_layers: 2
+      dropout: 0.1
+
+  data:
+    dataset: "BCI_IV_2a"
+    data_dir: "./data/BCI_IV_2a"
+    data_mode: "single"
+    subject_id: "A01"
+    train_ratio: 0.7
+    val_ratio: 0.15
+    normalization: "z_score"
+    batch_size: 32
+    num_workers: 0
+
+  training:
+    epochs: 100
+    optimizer:
+      name: "Adam"
+      lr:  冗0.001
+    scheduler:
+      name: "CosineAnnealingLR"
+      T_max: 50
+    save_dir: "./checkpoints/adc_attention"
+
+  # 评估配置
+  evaluation:
+    reconstruction: true
+    probe_tasks: true
+    spectral: true
