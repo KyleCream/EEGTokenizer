@@ -32,7 +32,7 @@ CONDA_INIT="$HOME/conda/etc/profile.d/conda.sh"
 # 训练相关配置
 
 # 训练脚本路径（相对于 PROJECT_DIR）
-TRAIN_SCRIPT="eegtokenizer_v2/train.py"
+TRAIN_SCRIPT="train.py"
 
 # 训练配置文件
 TRAIN_CONFIG="eegtokenizer_v2/configs/experiments.yaml::adc_4bit"
