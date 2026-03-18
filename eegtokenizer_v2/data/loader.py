@@ -239,6 +239,9 @@ class EEGDataLoader:
         if data_dir is None:
             data_dir = "/home/zengkai/model_compare/data/BNCI2014_001"
 
+        # 保存 data_dir
+        self.data_dir = data_dir
+        
         # 从 "A01" 提取数字 1
         self.subject = int(subject_id.replace('A', '').replace('0', ''))
         self.sessions = sessions

@@ -176,9 +176,10 @@ def main():
         data_loader = EEGDataLoader(
             data_dir=config['data']['data_dir'],
             subject_id=config['data']['subject_id'],
-            data_mode=config['data']['data_mode']
+            sessions=config['data'].get('sessions', 'train'),  # 默认 'train'
+            win_sel=tuple(config['data'].get('win_sel', [0.0, 4.0]))  # 默认 [0.0, 4.0]
         )
-        train_loader, val_loader, test_loader = data_loader.load_single_subject(
+        train_loader, val_loader, test_loader = data_loader.load_data(
             train_ratio=config['data']['train_ratio'],
             val_ratio=config['data']['val_ratio'],
             batch_size=config['data']['batch_size'],
