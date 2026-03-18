@@ -113,8 +113,11 @@ class BCIDataset(Dataset):
             # 获取数据并转换为 μV
             data_return = epochs.get_data() * 1e6
 
-            # 去均值（对每个 trial，对时间维度）
-            data_return = data_return - np.mean(data_return, axis=2, keepdims=True)
+            # 去均值（对每个 trial 的每个通道，计算所有时间点的均值）
+            # 数据形状: (n_trials, n_channels, n_samples)
+            # axis=1 是通道维度（n_channels）
+            # 这意味着：对每个通道，计算所有时间点的均值，然后减去
+            data_return = data_return - np.mean(data_return, axis=1, keepdims=True)
 
             data_subject['train'] = {
                 'X': data_return,
@@ -173,8 +176,11 @@ class BCIDataset(Dataset):
             # 获取数据并转换为 μV
             data_return = epochs.get_data() * 1e6
 
-            # 去均值（对每个 trial，对时间维度）
-            data_return = data_return - np.mean(data_return, axis=2, keepdims=True)
+            # 去均值（对每个 trial 的每个通道，计算所有时间点的均值）
+            # 数据形状: (n_trials, n_channels, n_samples)
+            # axis=1 是通道维度（n_channels）
+            # 这意味着：对每个通道，计算所有时间点的均值，然后减去
+            data_return = data_return - np.mean(data_return, axis=1, keepdims=True)
 
             data_subject['test'] = {
                 'X': data_return,
