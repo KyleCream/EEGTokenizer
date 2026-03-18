@@ -1,41 +1,83 @@
-# nit 服务器配置文件
+# nit 服务器配置文件（GitHub + Cron 方案）
 # 请根据实际情况修改以下配置
 
-# ==================== 云服务器配置 ====================
-# 云服务器信息（必须修改！）
+# ==================== GitHub 配置 ====================
+# GitHub 仓库配置
 
-# 云服务器的公网 IP 或域名
-CLOUD_SERVER="root@123.45.67.89"     # 必须修改为你的云服务器 IP
+# GitHub 仓库 URL
+GITHUB_REPO="https://github.com/KyleCream/EEGTokenizer.git"
 
-# 云服务器 SSH 端口（通常为 22）
-CLOUD_SSH_PORT=22
+# 本地项目路径
+PROJECT_DIR="$HOME/EEGTokenizer"
 
-# ==================== 隧道配置 ====================
-# 反向隧道配置
+# Git 分支
+GIT_BRANCH="main"
 
-# 在云服务器上映射的端口（建议 3000-4000）
-TUNNEL_PORT=3022
+# ==================== Python 环境配置 ====================
+# Python 环境配置
 
-# ==================== 本地配置 ====================
-# nit 本地配置
+# Conda 环境名称
+CONDA_ENV_NAME="mamba_cuda121"
 
-# 当前用户名
-REMOTE_USER="your_username"          # 必须修改为 nit 上的用户名
+# Python 解释器路径（如果 conda 不可用，使用绝对路径）
+PYTHON_PATH="$HOME/conda/envs/$CONDA_ENV_NAME/bin/python"
+
+# 激活 Conda 环境的脚本（根据系统调整）
+# 对于 bash：
+CONDA_INIT="$HOME/conda/etc/profile.d/conda.sh"
+# 对于 zsh：
+# CONDA_INIT="$HOME/conda/etc/profile.d/zsh.sh"
+
+# ==================== 训练配置 ====================
+# 训练相关配置
+
+# 训练脚本路径（相对于 PROJECT_DIR）
+TRAIN_SCRIPT="eegtokenizer_v2/train.py"
+
+# 训练配置文件
+TRAIN_CONFIG="eegtokenizer_v2/configs/experiments.yaml::adc_4bit"
+
+# 其他训练参数
+TRAIN_ARGS="--config $TRAIN_CONFIG"
+
+# ==================== 数据配置 ====================
+# 数据集配置
+
+# 数据目录
+DATA_DIR="./data/BCI_IV_2a"
+
+# 被试 ID
+SUBJECT_ID="A01"
+
+# 时间窗口（秒）
+WIN_TMIN=0.0
+WIN_TMAX=4.0
+
+# ==================== 日志配置 ====================
+# 日志配置
+
+# 日志目录
+LOG_DIR="$HOME/eeg-auto-logs"
+mkdir -p "$LOG_DIR"
+
+# 训练日志文件
+TRAINING_LOG="$LOG_DIR/training_$(date +%Y%m%d).log"
+
+# Cron 日志文件
+CRON_LOG="$LOG_DIR/cron_$(date +%Y%m%d).log"
+
+# ==================== Cron 配置 ====================
+# Cron 轮询配置
+
+# 检查间隔（分钟）
+CHECK_INTERVAL=5
 
 # ==================== 使用说明 ====================
-# 1. 修改上面的配置（特别是 CLOUD_SERVER 和 REMOTE_USER）
-# 2. 在云服务器上添加 nit 的 SSH 公钥：
-#    - 在 nit 上运行：cat ~/.ssh/id_rsa.pub
-#    - 复制公钥
-#    - 在云服务器上运行：nano ~/.ssh/authorized_keys
-#    - 粘贴公钥
-# 3. 启动隧道：
-#    cd ~/eeg-auto-iteration/nit-server/scripts
-#    ./tunnel_manager.sh start
-# 4. 检查状态：
-#    ./tunnel_manager.sh status
-# 5. 查看日志：
-#    ./tunnel_manager.sh log
-# 6. 设置开机自启（可选）：
+# 1. 修改上面的配置（特别是 GITHUB_REPO 和 PROJECT_DIR）
+# 2. 确保 Git 已配置并可以访问 GitHub
+# 3. 设置 Cron：
 #    crontab -e
-#    添加：@reboot sleep 30 && /home/your_username/eeg-auto-iteration/nit-server/scripts/tunnel_manager.sh start
+#    添加：*/5 * * * * /home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/scripts/github_pull_train.sh >> /home/zengkai/eeg-auto-logs/cron.log 2>&1
+# 4. 查看日志：
+#    tail -f ~/eeg-auto-logs/training_*.log
+#    tail -f ~/eeg-auto-logs/cron.log
