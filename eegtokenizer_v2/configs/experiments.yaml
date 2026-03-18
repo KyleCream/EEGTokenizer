@@ -1,9 +1,12 @@
 """
-配置管理（修正版）
+配置管理（修正版 v2）
 
 包含模型配置和评估配置
 
-所有路径都使用相对路径，确保在项目文件夹下
+数据路径（nit）：
+- /home/zengkai/model_compare/data/BNCI2014_001/
+
+所有路径都使用绝对路径（nit 上的路径）
 """
 
 # 基线配置：时空频编码器（STF）
@@ -26,9 +29,11 @@ baseline_stf:
 
   data:
     dataset: "BCI_IV_2a"
-    data_dir: "./data/BCI_IV_2a"
+    data_dir: "/home/zengkai/model_compare/data/BNCI2014_001"  # nit 上的绝对路径
     data_mode: "single"
     subject_id: "A01"
+    sessions: "train"  # 'train' / 'test' / 'both'
+    win_sel: [0.0, 4.0]  # 时间窗口（秒）
     train_ratio: 0.7
     val_ratio: 0.15
     normalization: "z_score"
@@ -65,9 +70,11 @@ adc_4bit:
 
   data:
     dataset: "BCI_IV_2a"
-    data_dir: "./data/BCI_IV_2a"
+    data_dir: "/home/zengkai/model_compare/data/BNCI2014_001"  # nit 上的绝对路径
     data_mode: "single"
     subject_id: "A01"
+    sessions: "train"
+    win_sel: [0.0, 4.0]
     train_ratio: 0.7
     val_ratio: 0.15
     normalization: "z_score"
@@ -110,9 +117,11 @@ adc_8bit:
 
   data:
     dataset: "BCI_IV_2a"
-    data_dir: "./data/BCI_IV_2a"
+    data_dir: "/home/zengkai/model_compare/data/BNCI2014_001"  # nit 上的绝对路径
     data_mode: "single"
     subject_id: "A01"
+    sessions: "train"
+    win_sel: [0.0, 4.0]
     train_ratio: 0.7
     val_ratio: 0.15
     normalization: "z_score"
@@ -156,9 +165,11 @@ adc_attention:
 
   data:
     dataset: "BCI_IV_2a"
-    data_dir: "./data/BCI_IV_2a"
+    data_dir: "/home/zengkai/model_compare/data/BNCI2014_001"  # nit 上的绝对路径
     data_mode: "single"
     subject_id: "A01"
+    sessions: "train"
+    win_sel: [0.0, 4.0]
     train_ratio: 0.7
     val_ratio: 0.15
     normalization: "z_score"

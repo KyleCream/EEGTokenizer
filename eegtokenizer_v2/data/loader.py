@@ -1,12 +1,12 @@
 """
-数据加载模块（修正版）
+数据加载模块（修正版 v2）
 
 根据 BCI IV 2a 数据集的标准加载方式重写
 
 数据格式：
 - 训练集：A01T.gdf, A02T.gdf, ...
 - 测试集：A01E.gdf, A02E.gdf, ...
-- 测试集标签：Data sets 2a_true_labels/A01E.mat
+- 测试集标签：/home/zengkai/model_compare/data/BNCI2014_001/Data sets 2a_true_labels/A01E.mat
 
 数据形状：
 - X: (n_trials, n_channels, n_samples)
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 class BCIDataset(Dataset):
     """
-    BCI IV 2a 数据集（修正版）
+    BCI IV 2a 数据集（修正版 v2）
 
     使用 MNE 的 Epochs 接口，正确处理事件和标签
 
@@ -130,7 +130,11 @@ class BCIDataset(Dataset):
             fs = raw_data.info['sfreq']
 
             # 加载真实标签（.mat 文件）
-            labels_mat = loadmat(f"{self.file_path}/Data sets 2a_true_labels/A0{self.subject:02d}E.mat")
+            # 标签路径：/home/zengkai/model_compare/data/BNCI2014_001/Data sets 2a_true_labels/A0{self.subject:02d}E.mat
+            labels_mat_path = f"{self.file_path}/Data sets 2a_true_labels/A0{self.subject:02d}E.mat"
+            logger.info(f"加载测试集标签: {labels_mat_path}")
+            
+            labels_mat = loadmat(labels_mat_path)
             class_all = labels_mat['classlabel'][:, 0]
 
             # 从注释中提取事件
@@ -140,8 +144,6 @@ class BCIDataset(Dataset):
             index_type = [value for key, value in event_ids.items() if key in '783']
             events_index = np.where(events[:, 2] == np.array(index_type))[0]
             events = events[events_index, :]
-
-            # 使用真实标签
             events[:, 2] = class_all
 
             # 获取所有类别
@@ -210,21 +212,27 @@ class BCIDataset(Dataset):
 
 class EEGDataLoader:
     """
-    EEG 数据加载器（修正版）
+    EEG 数据加载器（修正版 v2）
 
     使用正确的 BCI IV 2a 数据加载方式
 
-    数据形状：(n_trials, n_channels, n_samples)
+    数据路径（nit）：
+- 训练集：/home/zengkai/model_compare/data/BNCI2014_001/A01T.gdf
+- 测试集：/home/zengkai/model_compare/data/BNCI2014_001/A01E.gdf
+- 测试集标签：/home/zengkai/model_compare/data/BNCI2014_001/Data sets 2a_true_labels/A01E.mat
     """
 
     def __init__(
         self,
-        data_dir: str,
+        data_dir: str = None,
         subject_id: str = "A01",
         sessions: str = "train",
         win_sel: Tuple[float, float] = (0.0, 4.0)
     ):
-        self.data_dir = data_dir
+        # 如果未指定 data_dir，使用默认路径
+        if data_dir is None:
+            data_dir = "/home/zengkai/model_compare/data/BNCI2014_001"
+
         # 从 "A01" 提取数字 1
         self.subject = int(subject_id.replace('A', '').replace('0', ''))
         self.sessions = sessions
@@ -232,7 +240,7 @@ class EEGDataLoader:
 
         logger.info(f"EEGDataLoader 初始化")
         logger.info(f"  data_dir: {data_dir}")
-        logger.info(f"  subject: A0{self.subject:02d}")
+        logger.info(f"  subject: A0{self.subject}")
         logger.info(f"  sessions: {sessions}")
         logger.info(f"  win_sel: {win_sel}")
 
@@ -293,33 +301,3 @@ class EEGDataLoader:
         logger.info(f"  测试集: {len(test_dataset)} 样本")
 
         return train_loader, val_loader, test_loader
-
-
-# ==================== 便捷函数 ====================
-
-def load_BNCI2014_001(
-    file_path: str,
-    subject: int,
-    win_sel: Tuple[float, float] = (0.0, 4.0),
-    sessions: str = 'train'
-):
-    """
-    加载 BNCI 2014-001 数据集（BCI IV 2a）
-
-    Args:
-        file_path: 数据文件路径
-        subject: 被试 ID（1-9）
-        win_sel: 时间窗口选择 (tmin, tmax)，单位秒
-        sessions: 要加载的会话 ('train' / 'test' / 'both')
-
-    Returns:
-        data_subject: 字典，包含 'X', 'Y', 'fs', 'win_sel'
-    """
-    dataset = BCIDataset(
-        file_path=file_path,
-        subject=subject,
-        win_sel=win_sel,
-        sessions=sessions
-    )
-
-    return dataset.data
