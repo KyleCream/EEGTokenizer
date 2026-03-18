@@ -1,5 +1,0 @@
-{
-  "discourse_url": "https://your-discourse.example.com",
-  "api_key": "your-discourse-api-key-here",
-  "api_username": "system-username-for-api-calls"
-}
