@@ -95,14 +95,49 @@ if [ $? -eq 0 ]; then
     log "删除训练标记文件"
     rm -f "$TRAINING_FLAG"
     
-    # 推送结果回 GitHub（可选）
+    # 推送结果回 GitHub
     log "推送训练结果回 GitHub..."
-    git add eegtokenizer_v2/logs/ eegtokenizer_v2/checkpoints/ $TRAINING_FLAG >> "$CRON_LOG" 2>&1
-    git commit -m "训练结果: $(date '+%Y-%m-%d %H:%M:%S')" >> "$CRON_LOG" 2>&1
-    git push origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
+    
+    # 添加训练结果（检查点、日志、历史）
+    git add eegtokenizer_v2/checkpoints/ >> "$CRON_LOG" 2>&1
+    git add eegtokenizer_v2/logs/ >> "$CRON_LOG" 2>&1
+    git add *.log >> "$CRON_LOG" 2>&1
+    git add $TRAINING_FLAG >> "$CRON_LOG" 2>&1
+    
+    # 提交
+    git commit -m "训练结果: $(date '+%Y-%m-%d %H:%M:%S')
+
+    # 推送
+    MAX_RETRIES=3
+    RETRY_COUNT=0
+    
+    while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+        git push origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
+        if [ $? -eq 0 ]; then
+            log "推送成功"
+            break
+        else
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                log "推送失败，10秒后重试 ($RETRY_COUNT/$MAX_RETRIES)..."
+                sleep 10
+            else
+                log "推送失败，已达到最大重试次数"
+                exit 1
+            fi
+        fi
+    done
+    
 else
     log "错误：训练失败，查看日志: $TRAINING_LOG"
     log "保留训练标记文件以便下次重试"
+    
+    # 即使失败也尝试推送日志
+    git add eegtokenizer_v2/logs/ >> "$CRON_LOG" 2>&1
+    git add *.log >> "$CRON_LOG" 2>&1
+    git commit -m "训练失败日志: $(date '+%Y-%m-%d %H:%M:%S')" >> "$CRON_LOG" 2>&1
+    git push origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
+    
     exit 1
 fi
 
