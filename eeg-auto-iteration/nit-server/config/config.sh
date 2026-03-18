@@ -44,14 +44,14 @@ TRAIN_ARGS="--config $TRAIN_CONFIG"
 # 数据集配置
 
 # 数据目录
-DATA_DIR="./data/BCI_IV_2a"
+DATA_DIR="/home/zengkai/model_compare/data/BNCI2014_001"
 
 # 被试 ID
 SUBJECT_ID="A01"
 
 # 时间窗口（秒）
 WIN_TMIN=0.0
-WIN_TMAX=4.0
+WIN_TMAX=1.0
 
 # ==================== 日志配置 ====================
 # 日志配置
