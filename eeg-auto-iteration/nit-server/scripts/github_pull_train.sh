@@ -49,8 +49,7 @@ fi
 
 # 拉取最新代码
 log "拉取最新代码..."
-git fetch origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
-git reset --hard origin/$GIT_BRANCH >> "$CRON_LOG" 2>&1
+git pull origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
 
 if [ $? -ne 0 ]; then
     log "错误：git pull 失败"
