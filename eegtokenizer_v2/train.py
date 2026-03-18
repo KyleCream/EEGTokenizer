@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-统一训练入口
+统一训练入口（修正版）
 
 用法：
     python train.py --config configs/experiments.yaml::adc_4bit
@@ -11,6 +11,7 @@
 3. 完整的日志管理
 4. 错误处理
 5. 模型保存
+6. 自动推送到 GitHub
 """
 
 import sys
@@ -45,10 +46,15 @@ def setup_logging(log_dir: str):
         handlers=[
             logging.FileHandler(log_file),
             logging.StreamHandler()
-        ]
+        ],
+        force=True  # 强制重新配置
     )
 
-    return logging.getLogger(__name__)
+    # 创建根日志记录器（用于文件和控制台）
+    logger = logging.getLogger(__name__)
+    logger.info(f"日志文件: {log_file}")
+
+    return logger
 
 
 def load_config(config_path: str) -> dict:
@@ -137,16 +143,20 @@ def main():
         print(traceback.format_exc())
         sys.exit(1)
 
-    # 设置日志
-    save_dir = config.get('training', {}).get('save_dir', './checkpoints')
-    logger = setup_logging(save_dir)
-
+    # 设置日志（使用项目根目录）
+    project_root = Path(__file__).parent.parent
+    logs_dir = project_root / 'eegtokenizer_v2' / 'logs'
+    logs_dir.mkdir(parents=True, exist_ok=True)
+    
+    logger = setup_logging(str(logs_dir))
+    
     logger.info("=" * 60)
     logger.info("EEGTokenizer 训练开始")
     logger.info("=" * 60)
     logger.info(f"配置文件: {args.config}")
     logger.info(f"GPU: {device}")
     logger.info(f"调试模式: {args.debug}")
+    logger.info(f"项目根目录: {project_root}")
     logger.info("=" * 60)
 
     try:
@@ -188,28 +198,42 @@ def main():
         logger.info("自动推送训练结果到 GitHub...")
         import subprocess
         try:
+            # 切换到项目根目录
+            import os
+            original_dir = os.getcwd()
+            os.chdir(project_root)
+
             # 添加训练结果
-            subprocess.run(['git', 'add', 'eegtokenizer_v2/checkpoints/'], check=True)
-            subprocess.run(['git', 'add', 'eegtokenizer_v2/logs/'], check=True)
+            subprocess.run(['git', 'add', 'eegtokenizer_v2/checkpoints/'], check=True, capture_output=True)
+            subprocess.run(['git', 'add', 'eegtokenizer_v2/logs/'], check=True, capture_output=True)
             
-            # 提交
-            commit_msg = f"训练完成: {config['model']['tokenizer']['name']}_acc_{trainer.best_val_acc:.4f}"
-            subprocess.run(['git', 'commit', '-m', commit_msg], check=True)
-            
-            # 推送（最多重试3次）
-            for retry in range(3):
-                result = subprocess.run(['git', 'push', 'origin', 'main'], capture_output=True)
-                if result.returncode == 0:
-                    logger.info("✓ 训练结果已推送到 GitHub")
-                    break
-                else:
-                    if retry < 2:
-                        logger.warning(f"推送失败，10秒后重试 ({retry + 1}/3)...")
-                        import time
-                        time.sleep(10)
+            # 检查是否有变更
+            result = subprocess.run(['git', 'diff', '--cached', '--quiet'], capture_output=True)
+            if result.returncode == 0:
+                # 有变更，提交并推送
+                commit_msg = f"训练结果: {config['model']['tokenizer']['name']}_acc_{trainer.best_val_acc:.4f}"
+                subprocess.run(['git', 'commit', '-m', commit_msg], check=True, capture_output=True)
+                
+                # 推送（最多重试3次）
+                for retry in range(3):
+                    result = subprocess.run(['git', 'push', 'origin', 'main'], capture_output=True)
+                    if result.returncode == 0:
+                        logger.info("✓ 训练结果已推送到 GitHub")
+                        break
                     else:
-                        logger.error("❌ 推送失败，请手动推送")
-                        logger.error(f"错误信息: {result.stderr.decode()}")
+                        if retry < 2:
+                            logger.warning(f"推送失败，10秒后重试 ({retry + 1}/3)...")
+                            import time
+                            time.sleep(10)
+                        else:
+                            logger.error("❌ 推送失败，请手动推送: git push origin main")
+                            logger.error(f"错误信息: {result.stderr.decode()}")
+            else:
+                logger.info("没有需要推送的变更")
+
+            # 恢复目录
+            os.chdir(original_dir)
+
         except Exception as e:
             logger.warning(f"自动推送失败: {e}")
             logger.warning("请手动推送: git push origin main")
