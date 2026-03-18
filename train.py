@@ -150,7 +150,7 @@ def main():
         sys.exit(1)
 
     # 设置日志（使用项目根目录）
-    project_root = Path(__file__).parent.parent
+    project_root = Path(__file__).parent
     logs_dir = project_root / 'eegtokenizer_v2' / 'logs'
     logs_dir.mkdir(parents=True, exist_ok=True)
     
