@@ -1,14 +1,24 @@
 """
-数据加载模块
+数据加载模块（修正版）
 
-封装 BCI IV 2a 数据集的加载逻辑
+根据 BCI IV 2a 数据集的标准加载方式重写
+
+数据格式：
+- 训练集：A01T.gdf, A02T.gdf, ...
+- 测试集：A01E.gdf, A02E.gdf, ...
+- 测试集标签：Data sets 2a_true_labels/A01E.mat
+
+数据形状：
+- X: (n_trials, n_channels, n_samples)
+- Y: (n_trials,)
 """
 
 import torch
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import mne
-from typing import Tuple, Dict, Optional
+from scipy.io import loadmat
+from typing import Tuple, Optional
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,92 +26,217 @@ logger = logging.getLogger(__name__)
 
 class BCIDataset(Dataset):
     """
-    BCI IV 2a 数据集
+    BCI IV 2a 数据集（修正版）
+
+    使用 MNE 的 Epochs 接口，正确处理事件和标签
 
     Args:
-        data_path: 数据路径（.fif 文件）
-        window_length: 窗口长度
-        step_length: 步长
-        normalization: 归一化方式（"z_score"/"min_max"/"none"）
+        file_path: 数据文件路径
+        subject: 被试 ID（1-9）
+        win_sel: 时间窗口选择 (tmin, tmax)
+        sessions: 要加载的会话 ('train' / 'test' / 'both')
     """
 
     def __init__(
         self,
-        data_path: str,
-        labels_path: str,
-        window_length: int = 1000,
-        step_length: int = 500,
-        normalization: str = "z_score"
+        file_path: str,
+        subject: int,
+        win_sel: Tuple[float, float] = (0.0, 4.0),
+        sessions: str = 'train',
+        channels_to_remove: Optional[list] = None
     ):
-        self.data_path = data_path
-        self.labels_path = labels_path
-        self.window_length = window_length
-        self.step_length = step_length
-        self.normalization = normalization
+        self.file_path = file_path
+        self.subject = subject
+        self.win_sel = win_sel
+        self.sessions = sessions
+
+        # 移除的通道（眼电）
+        if channels_to_remove is None:
+            self.channels_to_remove = ['EOG-left', 'EOG-central', 'EOG-right']
+        else:
+            self.channels_to_remove = channels_to_remove
+
+        # 刺激代码
+        # '769', '770', '771', '772' 对应 4 个类别
+        # '768' 是 trial 开始（0 时刻）
+        self.stimcodes_train = ('769', '770', '771', '772')
 
         # 加载数据
-        self.raw_data = mne.io.read_raw_fif(data_path, preload=True)
-        self.data = self.raw_data.get_data()  # (channels, timepoints)
+        self.data = self._load_data()
 
-        # 加载标签
-        self.labels = np.load(labels_path)
+        logger.info(f"数据集加载完成")
+        logger.info(f"  被试: A0{subject}")
+        logger.info(f"  会话: {sessions}")
+        logger.info(f"  形状: {self.data['X'].shape}")
+        logger.info(f"  标签形状: {self.data['Y'].shape}")
 
-        # 归一化
-        if normalization == "z_score":
-            mean = np.mean(self.data, axis=1, keepdims=True)
-            std = np.std(self.data, axis=1, keepdims=True)
-            self.data = (self.data - mean) / (std + 1e-8)
-        elif normalization == "min_max":
-            min_val = np.min(self.data, axis=1, keepdims=True)
-            max_val = np.max(self.data, axis=1, keepdims=True)
-            self.data = (self.data - min_val) / (max_val - min_val + 1e-8)
+    def _load_data(self):
+        """加载数据"""
+        data_subject = {}
+        tmin, tmax = self.win_sel
 
-        # 分段
-        self.segments = self._create_segments()
+        # ==================== 训练集数据 ====================
+        if self.sessions in ['train', 'both']:
+            file_to_load = f"{self.file_path}/A0{self.subject:02d}T.gdf"
+            logger.info(f"加载训练集: {file_to_load}")
 
-        logger.info(f"数据集加载完成: {len(self.segments)} 个样本")
+            raw_data = mne.io.read_raw_gdf(file_to_load, preload=True, verbose=False)
+            fs = raw_data.info['sfreq']
 
-    def _create_segments(self) -> list:
-        """创建样本片段"""
-        segments = []
+            # 从注释中提取事件
+            events, event_ids = mne.events_from_annotations(raw_data)
 
-        for i in range(0, self.data.shape[1] - self.window_length + 1, self.step_length):
-            segment_data = self.data[:, i:i + self.window_length]
+            # 只选择 4 个类别的刺激
+            stims = [value for key, value in event_ids.items() if key in self.stimcodes_train]
 
-            # 标签：取该段的主要标签
-            segment_labels = self.labels[i:i + self.window_length]
-            segment_label = np.bincount(segment_labels.astype(int)).argmax()
+            # 创建 Epochs
+            epochs = mne.Epochs(
+                raw_data,
+                events,
+                event_id=stims,
+                tmin=tmin,
+                tmax=tmax,
+                event_repeated='drop',
+                baseline=None,
+                preload=True,
+                proj=False,
+                reject_by_annotation=False,
+                verbose=False
+            )
 
-            segments.append((segment_data, segment_label))
+            # 移除眼电通道
+            epochs = epochs.drop_channels(self.channels_to_remove)
 
-        return segments
+            # 获取标签（转换为 0-3）
+            class_return = epochs.events[:, -1] - min(epochs.events[:, -1])
+
+            # 获取数据并转换为 μV
+            data_return = epochs.get_data() * 1e6
+
+            # 去均值（对每个 trial，对时间维度）
+            data_return = data_return - np.mean(data_return, axis=2, keepdims=True)
+
+            data_subject['train'] = {
+                'X': data_return,
+                'Y': class_return
+            }
+
+        # ==================== 测试集数据 ====================
+        if self.sessions in ['test', 'both']:
+            file_to_load = f"{self.file_path}/A0{self.subject:02d}E.gdf"
+            logger.info(f"加载测试集: {file_to_load}")
+
+            raw_data = mne.io.read_raw_gdf(file_to_load, preload=True, verbose=False)
+            fs = raw_data.info['sfreq']
+
+            # 加载真实标签（.mat 文件）
+            labels_mat = loadmat(f"{self.file_path}/Data sets 2a_true_labels/A0{self.subject:02d}E.mat")
+            class_all = labels_mat['classlabel'][:, 0]
+
+            # 从注释中提取事件
+            events, event_ids = mne.events_from_annotations(raw_data)
+
+            # 找到 '783' 事件（trial 开始）
+            index_type = [value for key, value in event_ids.items() if key in '783']
+            events_index = np.where(events[:, 2] == np.array(index_type))[0]
+            events = events[events_index, :]
+
+            # 使用真实标签
+            events[:, 2] = class_all
+
+            # 获取所有类别
+            stims = list(np.array(np.unique(class_all)))
+
+            # 创建 Epochs
+            epochs = mne.Epochs(
+                raw_data,
+                events,
+                event_id=stims,
+                tmin=tmin,
+                tmax=tmax,
+                event_repeated='drop',
+                baseline=None,
+                preload=True,
+                proj=False,
+                reject_by_annotation=False,
+                verbose=False
+            )
+
+            # 移除眼电通道
+            epochs = epochs.drop_channels(self.channels_to_remove)
+
+            # 获取标签（转换为 0-3）
+            class_return = epochs.events[:, -1] - min(epochs.events[:, -1])
+
+            # 获取数据并转换为 μV
+            data_return = epochs.get_data() * 1e6
+
+            # 去均值（对每个 trial，对时间维度）
+            data_return = data_return - np.mean(data_return, axis=2, keepdims=True)
+
+            data_subject['test'] = {
+                'X': data_return,
+                'Y': class_return
+            }
+
+        # 添加元数据
+        data_subject['fs'] = fs
+        data_subject['win_sel'] = self.win_sel
+
+        # 合并训练和测试集
+        if self.sessions == 'both':
+            X_train = data_subject['train']['X']
+            Y_train = data_subject['train']['Y']
+            X_test = data_subject['test']['X']
+            Y_test = data_subject['test']['Y']
+
+            X = np.concatenate([X_train, X_test], axis=0)
+            Y = np.concatenate([Y_train, Y_test], axis=0)
+
+            return {'X': X, 'Y': Y, 'fs': fs}
+        elif self.sessions == 'train':
+            return {'X': data_subject['train']['X'], 'Y': data_subject['train']['Y'], 'fs': fs}
+        else:  # test
+            return {'X': data_subject['test']['X'], 'Y': data_subject['test']['Y'], 'fs': fs}
 
     def __len__(self):
-        return len(self.segments)
+        return self.data['X'].shape[0]
 
     def __getitem__(self, idx) -> Tuple[torch.Tensor, int]:
-        data, label = self.segments[idx]
+        data = self.data['X'][idx]
+        label = self.data['Y'][idx]
         return torch.tensor(data, dtype=torch.float32), int(label)
 
 
 class EEGDataLoader:
     """
-    EEG 数据加载器（统一接口）
+    EEG 数据加载器（修正版）
 
-    支持单被试和跨被试模式
+    使用正确的 BCI IV 2a 数据加载方式
+
+    数据形状：(n_trials, n_channels, n_samples)
     """
 
-    def __init__(self, data_dir: str, subject_id: str = "A01", data_mode: str = "single"):
+    def __init__(
+        self,
+        data_dir: str,
+        subject_id: str = "A01",
+        sessions: str = "train",
+        win_sel: Tuple[float, float] = (0.0, 4.0)
+    ):
         self.data_dir = data_dir
-        self.subject_id = subject_id
-        self.data_mode = data_mode
+        # 从 "A01" 提取数字 1
+        self.subject = int(subject_id.replace('A', '').replace('0', ''))
+        self.sessions = sessions
+        self.win_sel = win_sel
 
         logger.info(f"EEGDataLoader 初始化")
         logger.info(f"  data_dir: {data_dir}")
-        logger.info(f"  subject_id: {subject_id}")
-        logger.info(f"  data_mode: {data_mode}")
+        logger.info(f"  subject: A0{self.subject:02d}")
+        logger.info(f"  sessions: {sessions}")
+        logger.info(f"  win_sel: {win_sel}")
 
-    def load_single_subject(
+    def load_data(
         self,
         train_ratio: float = 0.7,
         val_ratio: float = 0.15,
@@ -109,16 +244,18 @@ class EEGDataLoader:
         num_workers: int = 0
     ) -> Tuple[DataLoader, DataLoader, DataLoader]:
         """
-        加载单被试数据
+        加载数据
 
         Returns:
             train_loader, val_loader, test_loader
         """
-        data_path = f"{self.data_dir}/{self.subject_id}.fif"
-        labels_path = f"{self.data_dir}/{self.subject_id}_labels.npy"
-
-        # 创建数据集
-        full_dataset = BCIDataset(data_path, labels_path)
+        # 加载数据集
+        full_dataset = BCIDataset(
+            file_path=self.data_dir,
+            subject=self.subject,
+            win_sel=self.win_sel,
+            sessions=self.sessions
+        )
 
         # 划分训练/验证/测试集
         total_size = len(full_dataset)
@@ -131,13 +268,58 @@ class EEGDataLoader:
         )
 
         # 创建 DataLoader
-        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
-        val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
-        test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+        train_loader = DataLoader(
+            train_dataset,
+            batch_size=batch_size,
+            shuffle=True,
+            num_workers=num_workers
+        )
+        val_loader = DataLoader(
+            val_dataset,
+            batch_size=batch_size,
+            shuffle=False,
+            num_workers=num_workers
+        )
+        test_loader = DataLoader(
+            test_dataset,
+            batch_size=batch_size,
+            shuffle=False,
+            num_workers=num_workers
+        )
 
-        logger.info(f"单被试数据加载完成")
+        logger.info(f"数据加载完成")
         logger.info(f"  训练集: {len(train_dataset)} 样本")
         logger.info(f"  验证集: {len(val_dataset)} 样本")
         logger.info(f"  测试集: {len(test_dataset)} 样本")
 
         return train_loader, val_loader, test_loader
+
+
+# ==================== 便捷函数 ====================
+
+def load_BNCI2014_001(
+    file_path: str,
+    subject: int,
+    win_sel: Tuple[float, float] = (0.0, 4.0),
+    sessions: str = 'train'
+):
+    """
+    加载 BNCI 2014-001 数据集（BCI IV 2a）
+
+    Args:
+        file_path: 数据文件路径
+        subject: 被试 ID（1-9）
+        win_sel: 时间窗口选择 (tmin, tmax)，单位秒
+        sessions: 要加载的会话 ('train' / 'test' / 'both')
+
+    Returns:
+        data_subject: 字典，包含 'X', 'Y', 'fs', 'win_sel'
+    """
+    dataset = BCIDataset(
+        file_path=file_path,
+        subject=subject,
+        win_sel=win_sel,
+        sessions=sessions
+    )
+
+    return dataset.data
