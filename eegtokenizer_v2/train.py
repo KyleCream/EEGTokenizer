@@ -184,6 +184,36 @@ def main():
         logger.info(f"检查点保存位置: {trainer.save_dir}")
         logger.info("=" * 60)
 
+        # 自动推送到 GitHub
+        logger.info("自动推送训练结果到 GitHub...")
+        import subprocess
+        try:
+            # 添加训练结果
+            subprocess.run(['git', 'add', 'eegtokenizer_v2/checkpoints/'], check=True)
+            subprocess.run(['git', 'add', 'eegtokenizer_v2/logs/'], check=True)
+            
+            # 提交
+            commit_msg = f"训练完成: {config['model']['tokenizer']['name']}_acc_{trainer.best_val_acc:.4f}"
+            subprocess.run(['git', 'commit', '-m', commit_msg], check=True)
+            
+            # 推送（最多重试3次）
+            for retry in range(3):
+                result = subprocess.run(['git', 'push', 'origin', 'main'], capture_output=True)
+                if result.returncode == 0:
+                    logger.info("✓ 训练结果已推送到 GitHub")
+                    break
+                else:
+                    if retry < 2:
+                        logger.warning(f"推送失败，10秒后重试 ({retry + 1}/3)...")
+                        import time
+                        time.sleep(10)
+                    else:
+                        logger.error("❌ 推送失败，请手动推送")
+                        logger.error(f"错误信息: {result.stderr.decode()}")
+        except Exception as e:
+            logger.warning(f"自动推送失败: {e}")
+            logger.warning("请手动推送: git push origin main")
+
     except Exception as e:
         logger.error(f"❌ 训练失败: {e}")
         logger.error(traceback.format_exc())

@@ -1,7 +1,9 @@
 """
-配置管理
+配置管理（修正版）
 
 包含模型配置和评估配置
+
+所有路径都使用相对路径，确保在项目文件夹下
 """
 
 # 基线配置：时空频编码器（STF）
@@ -41,7 +43,7 @@ baseline_stf:
     scheduler:
       name: "CosineAnnealingLR"
       T_max: 50
-    save_dir: "./checkpoints/baseline_stf"
+    save_dir: "./eegtokenizer_v2/checkpoints/baseline_stf"  # 相对路径
 
 # ADC 4bit 配置（核心探索）
 adc_4bit:
@@ -79,8 +81,8 @@ adc_4bit:
       lr: 0.001
     scheduler:
       name: "CosineAnnealingLR"
-      T20max: 50
-    save_dir: "./checkpoints/adc_4bit"
+      T_max: 50
+    save_dir: "./eegtokenizer_v2/checkpoints/adc_4bit"  # 相对路径
 
   # 评估配置
   evaluation:
@@ -93,7 +95,7 @@ adc_8bit:
   model:
     type: "ADC"
     tokenizer:
-      name: "ADCTizer"
+      name: "ADCTokenizer"
       window_length: 250
       step_length: 125
       num_bits: 8
@@ -101,7 +103,7 @@ adc_8bit:
       agg_type: "mean"
     classifier:
       type: "Transformer"
-      num_classes:  4
+      num_classes: 4
       nhead: 8
       num_layers: 2
       dropout: 0.1
@@ -125,7 +127,7 @@ adc_8bit:
     scheduler:
       name: "CosineAnnealingLR"
       T_max: 50
-    save_dir: "./checkpoints/adc_8bit"
+    save_dir: "./eegtokenizer_v2/checkpoints/adc_8bit"  # 相对路径
 
   # 评估配置
   evaluation:
@@ -167,11 +169,11 @@ adc_attention:
     epochs: 100
     optimizer:
       name: "Adam"
-      lr:  冗0.001
+      lr: 0.001
     scheduler:
       name: "CosineAnnealingLR"
       T_max: 50
-    save_dir: "./checkpoints/adc_attention"
+    save_dir: "./eegtokenizer_v2/checkpoints/adc_attention"  # 相对路径
 
   # 评估配置
   evaluation:
