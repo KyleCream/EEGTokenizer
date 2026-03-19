@@ -280,9 +280,18 @@ class EEGDataLoader:
         train_size = int(total_size * train_ratio)
         val_size = int(total_size * val_ratio)
 
+        # 确保3个集合的总和等于总大小
+        test_size = total_size - train_size - val_size
+
+        logger.info(f"数据集划分:")
+        logger.info(f"  总样本: {total_size}")
+        logger.info(f"  训练集: {train_size} ({train_ratio*100}%)")
+        logger.info(f"  验证集: {val_size} ({val_ratio*100}%)")
+        logger.info(f"  测试集: {test_size} ({(1-train_ratio-val_ratio)*100}%)")
+
         train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(
             full_dataset,
-            [train_size, val_size, total_size - train_size - val_size]
+            [train_size, val_size, test_size]
         )
 
         # 创建 DataLoader
@@ -292,15 +301,20 @@ class EEGDataLoader:
             shuffle=True,
             num_workers=num_workers
         )
+        
+        # 验证集和测试集使用较小的 batch_size,避免批次太小
+        val_batch_size = min(batch_size, len(val_dataset))
+        test_batch_size = min(batch_size, len(test_dataset))
+        
         val_loader = DataLoader(
             val_dataset,
-            batch_size=batch_size,
+            batch_size=val_batch_size,
             shuffle=False,
             num_workers=num_workers
         )
         test_loader = DataLoader(
             test_dataset,
-            batch_size=batch_size,
+            batch_size=test_batch_size,
             shuffle=False,
             num_workers=num_workers
         )
