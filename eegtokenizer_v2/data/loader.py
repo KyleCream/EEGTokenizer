@@ -322,7 +322,8 @@ class EEGDataLoader:
             train_dataset,
             batch_size=batch_size,
             shuffle=True,
-            num_workers=num_workers
+            num_workers=num_workers,
+            drop_last=False  # 不丢弃不完整的批次
         )
         
         # 验证集和测试集使用较小的 batch_size
@@ -333,13 +334,15 @@ class EEGDataLoader:
             val_dataset,
             batch_size=val_batch_size,
             shuffle=False,
-            num_workers=num_workers
+            num_workers=num_workers,
+            drop_last=False  # 不丢弃不完整的批次
         )
         test_loader = DataLoader(
             test_dataset,
             batch_size=test_batch_size,
             shuffle=False,
-            num_workers=num_workers
+            num_workers=num_workers,
+            drop_last=False  # 不丢弃不完整的批次
         )
 
         logger.info(f"数据加载完成")
