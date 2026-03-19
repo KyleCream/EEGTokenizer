@@ -215,3 +215,42 @@ Fast-forward
 [2026-03-19 22:25:05] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit --gpu 1
 [2026-03-19 22:25:09] 错误：训练失败，查看日志: /home/zengkai/EEGTokenizer/eegtokenizer_v2/logs/train_20260319.log
 [2026-03-19 22:25:09] 保留训练标记文件以便下次重试
+[main b788cf4] 训练失败日志: 2026-03-19 22:25:09
+ 3 files changed, 116 insertions(+), 5157 deletions(-)
+To github.com:KyleCream/EEGTokenizer.git
+   a932279..b788cf4  main -> main
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 44: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 50: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 51: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 59: log: 未找到命令
+[2026-03-19 22:30:01] ========================================
+[2026-03-19 22:30:01] ========================================
+[2026-03-19 22:30:01] 自动训练脚本启动（标记文件控制）
+[2026-03-19 22:30:01] 自动训练脚本启动（标记文件控制）
+[2026-03-19 22:30:01] ========================================
+[2026-03-19 22:30:01] ========================================
+[2026-03-19 22:30:01] 检测到训练标记文件，准备运行训练...
+[2026-03-19 22:30:01] 检测到训练标记文件，准备运行训练...
+[2026-03-19 22:30:01] 拉取最新代码...
+[2026-03-19 22:30:01] 拉取最新代码...
+来自 github.com:KyleCream/EEGTokenizer
+ * branch            main       -> FETCH_HEAD
+已经是最新的。
+[2026-03-19 22:30:28] 代码更新完成
+[2026-03-19 22:30:28] 代码更新完成
+[2026-03-19 22:30:28] 激活 Conda 环境: mamba_cuda121
+[2026-03-19 22:30:28] 激活 Conda 环境: mamba_cuda121
+[2026-03-19 22:30:28] Python 版本: Python 3.11.11
+[2026-03-19 22:30:28] Python 版本: Python 3.11.11
+[2026-03-19 22:30:28] Python 路径: /home/zengkai/conda/envs/mamba_cuda121/bin/python
+[2026-03-19 22:30:28] Python 路径: /home/zengkai/conda/envs/mamba_cuda121/bin/python
+[2026-03-19 22:30:28] 开始训练...
+[2026-03-19 22:30:28] 开始训练...
+[2026-03-19 22:30:28] 训练脚本: train.py
+[2026-03-19 22:30:28] 训练脚本: train.py
+[2026-03-19 22:30:28] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit --gpu 1
+[2026-03-19 22:30:28] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit --gpu 1
+[2026-03-19 22:30:32] 错误：训练失败，查看日志: /home/zengkai/EEGTokenizer/eegtokenizer_v2/logs/train_20260319.log
+[2026-03-19 22:30:32] 错误：训练失败，查看日志: /home/zengkai/EEGTokenizer/eegtokenizer_v2/logs/train_20260319.log
+[2026-03-19 22:30:32] 保留训练标记文件以便下次重试
+[2026-03-19 22:30:32] 保留训练标记文件以便下次重试
