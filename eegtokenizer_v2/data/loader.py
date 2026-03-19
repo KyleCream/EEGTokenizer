@@ -65,7 +65,7 @@ class BCIDataset(Dataset):
         self.data = self._load_data()
 
         logger.info(f"数据集加载完成")
-        logger.info(f"  被试: A0{subject}")
+        logger.info(f"  被试: {subject}")  # 直接显示原始字符串
         logger.info(f"  会话: {sessions}")
         logger.info(f"  形状: {self.data['X'].shape}")
         logger.info(f"  标签形状: {self.data['Y'].shape}")
@@ -77,7 +77,8 @@ class BCIDataset(Dataset):
 
         # ==================== 训练集数据 ====================
         if self.sessions in ['train', 'both']:
-            file_to_load = f"{self.file_path}/A0{self.subject:02d}T.gdf"
+            # 使用原始 subject 字符串 (如 "A01")
+            file_to_load = f"{self.file_path}/{self.subject}T.gdf"
             logger.info(f"加载训练集: {file_to_load}")
 
             raw_data = mne.io.read_raw_gdf(file_to_load, preload=True, verbose=False)
@@ -242,14 +243,14 @@ class EEGDataLoader:
         # 保存 data_dir
         self.data_dir = data_dir
         
-        # 从 "A01" 提取数字 1
-        self.subject = int(subject_id.replace('A', '').replace('0', ''))
+        # 保存 subject_id (字符串形式,如 "A01")
+        self.subject_id = subject_id
         self.sessions = sessions
         self.win_sel = win_sel
 
         logger.info(f"EEGDataLoader 初始化")
         logger.info(f"  data_dir: {data_dir}")
-        logger.info(f"  subject: A0{self.subject}")
+        logger.info(f"  subject_id: {subject_id}")
         logger.info(f"  sessions: {sessions}")
         logger.info(f"  win_sel: {win_sel}")
 
@@ -269,7 +270,7 @@ class EEGDataLoader:
         # 加载数据集
         full_dataset = BCIDataset(
             file_path=self.data_dir,
-            subject=self.subject,
+            subject=self.subject_id,  # 直接传字符串
             win_sel=self.win_sel,
             sessions=self.sessions
         )
