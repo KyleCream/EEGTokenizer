@@ -254,3 +254,59 @@ To github.com:KyleCream/EEGTokenizer.git
 [2026-03-19 22:30:32] 错误：训练失败，查看日志: /home/zengkai/EEGTokenizer/eegtokenizer_v2/logs/train_20260319.log
 [2026-03-19 22:30:32] 保留训练标记文件以便下次重试
 [2026-03-19 22:30:32] 保留训练标记文件以便下次重试
+[main 557f8b0] 训练失败日志: 2026-03-19 22:30:32
+ 3 files changed, 102 insertions(+), 29 deletions(-)
+To github.com:KyleCream/EEGTokenizer.git
+   b788cf4..557f8b0  main -> main
+[2026-03-19 23:00:00] ========================================
+[2026-03-19 23:00:00] 自动训练脚本启动（标记文件控制）
+[2026-03-19 23:00:00] ========================================
+[2026-03-19 23:00:00] 检测到训练标记文件，准备运行训练...
+[2026-03-19 23:00:00] 拉取最新代码...
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 44: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 50: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 51: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 59: log: 未找到命令
+[2026-03-19 23:00:01] ========================================
+[2026-03-19 23:00:01] ========================================
+[2026-03-19 23:00:01] 自动训练脚本启动（标记文件控制）
+[2026-03-19 23:00:01] 自动训练脚本启动（标记文件控制）
+[2026-03-19 23:00:01] ========================================
+[2026-03-19 23:00:01] ========================================
+[2026-03-19 23:00:01] 检测到训练标记文件，准备运行训练...
+[2026-03-19 23:00:01] 检测到训练标记文件，准备运行训练...
+[2026-03-19 23:00:01] 拉取最新代码...
+[2026-03-19 23:00:01] 拉取最新代码...
+来自 github.com:KyleCream/EEGTokenizer
+ * branch            main       -> FETCH_HEAD
+   557f8b0..c3261fb  main       -> origin/main
+更新 557f8b0..c3261fb
+Fast-forward
+ eegtokenizer_v2/data/loader.py | 20 ++++++++++++++++----
+ train.py                       |  3 +--
+ 2 files changed, 17 insertions(+), 6 deletions(-)
+[2026-03-19 23:00:18] 代码更新完成
+[2026-03-19 23:00:18] 代码更新完成
+[2026-03-19 23:00:18] 激活 Conda 环境: mamba_cuda121
+[2026-03-19 23:00:18] 激活 Conda 环境: mamba_cuda121
+来自 github.com:KyleCream/EEGTokenizer
+ * branch            main       -> FETCH_HEAD
+error: cannot lock ref 'refs/remotes/origin/main': is at c3261fbd3c394329bf41421ec719dff5e05b3391 but expected 557f8b0696933ae579c37a634b0742df9b97fe3f
+ ! 557f8b0..c3261fb  main       -> origin/main  (不能更新本地引用)
+[2026-03-19 23:00:18] 错误：git pull 失败
+[2026-03-19 23:00:18] Python 版本: Python 3.11.11
+[2026-03-19 23:00:18] Python 版本: Python 3.11.11
+[2026-03-19 23:00:18] Python 路径: /home/zengkai/conda/envs/mamba_cuda121/bin/python
+[2026-03-19 23:00:18] Python 路径: /home/zengkai/conda/envs/mamba_cuda121/bin/python
+[2026-03-19 23:00:18] 开始训练...
+[2026-03-19 23:00:18] 开始训练...
+[2026-03-19 23:00:18] 训练脚本: train.py
+[2026-03-19 23:00:18] 训练脚本: train.py
+[2026-03-19 23:00:18] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit --gpu 1
+[2026-03-19 23:00:18] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit --gpu 1
+[2026-03-19 23:00:43] 训练完成
+[2026-03-19 23:00:43] 训练完成
+[2026-03-19 23:00:43] 删除训练标记文件
+[2026-03-19 23:00:43] 删除训练标记文件
+[2026-03-19 23:00:43] 推送训练日志到 GitHub...
+[2026-03-19 23:00:43] 推送训练日志到 GitHub...
