@@ -31,10 +31,8 @@ baseline_stf:
     data_mode: "single"
     subject_id: "A01"
     sessions: "train"  # 'train' / 'test' / 'both'
-    win_sel: [0.0, 4.0]  # 时间窗口（秒）
+    win_sel: [-2.0, 5.0]  # 时间窗口（秒）- 修改为 [-2, 5]
     train_ratio: 0.7
-    val_ratio: 0.15
-    normalization: "z_score"
     batch_size: 32
     num_workers: 0
 
