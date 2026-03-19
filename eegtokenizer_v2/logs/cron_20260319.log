@@ -1,0 +1,49 @@
+[2026-03-19 21:04:19] ========================================
+[2026-03-19 21:04:19] 自动训练脚本启动（标记文件控制）
+[2026-03-19 21:04:19] ========================================
+[2026-03-19 21:04:19] 检测到训练标记文件，准备运行训练...
+[2026-03-19 21:04:19] 拉取最新代码...
+来自 github.com:KyleCream/EEGTokenizer
+ * branch            main       -> FETCH_HEAD
+已经是最新的。
+[2026-03-19 21:04:25] 代码更新完成
+[2026-03-19 21:04:25] 激活 Conda 环境: mamba_cuda121
+[2026-03-19 21:04:26] Python 版本: Python 3.11.11
+[2026-03-19 21:04:26] Python 路径: /home/zengkai/conda/envs/mamba_cuda121/bin/python
+[2026-03-19 21:04:26] 开始训练...
+[2026-03-19 21:04:26] 训练脚本: train.py
+[2026-03-19 21:04:26] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit
+[2026-03-19 21:04:30] 错误：训练失败，查看日志: /home/zengkai/EEGTokenizer/eegtokenizer_v2/logs/train_20260319.log
+[2026-03-19 21:04:30] 保留训练标记文件以便下次重试
+下列路径根据您的一个 .gitignore 文件而被忽略：
+eegtokenizer_v2/logs
+提示：如果您确实要添加它们，使用 -f 参数。
+提示：运行下面的命令来关闭本消息
+提示："git config advice.addIgnoredFile false"
+位于分支 main
+您的分支与上游分支 'origin/main' 一致。
+
+尚未暂存以备提交的变更：
+  （使用 "git add <文件>..." 更新要提交的内容）
+  （使用 "git restore <文件>..." 丢弃工作区的改动）
+	修改：     .needs_training
+
+修改尚未加入提交（使用 "git add" 和/或 "git commit -a"）
+Everything up-to-date
+[2026-03-19 21:08:40] ========================================
+[2026-03-19 21:08:40] 自动训练脚本启动（标记文件控制）
+[2026-03-19 21:08:40] ========================================
+[2026-03-19 21:08:40] 检测到训练标记文件，准备运行训练...
+[2026-03-19 21:08:40] 拉取最新代码...
+来自 github.com:KyleCream/EEGTokenizer
+ * branch            main       -> FETCH_HEAD
+已经是最新的。
+[2026-03-19 21:08:46] 代码更新完成
+[2026-03-19 21:08:46] 激活 Conda 环境: mamba_cuda121
+[2026-03-19 21:08:47] Python 版本: Python 3.11.11
+[2026-03-19 21:08:47] Python 路径: /home/zengkai/conda/envs/mamba_cuda121/bin/python
+[2026-03-19 21:08:47] 开始训练...
+[2026-03-19 21:08:47] 训练脚本: train.py
+[2026-03-19 21:08:47] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit
+[2026-03-19 21:08:52] 错误：训练失败，查看日志: /home/zengkai/EEGTokenizer/eegtokenizer_v2/logs/train_20260319.log
+[2026-03-19 21:08:52] 保留训练标记文件以便下次重试
