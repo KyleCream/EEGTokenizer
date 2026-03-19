@@ -152,9 +152,17 @@ class Trainer:
         all_preds = []
         all_labels = []
 
+        # 调试: 打印验证集信息
+        logger.info(f"验证集信息:")
+        logger.info(f"  批次数: {len(val_loader)}")
+        logger.info(f"  样本数: {len(val_loader.dataset)}")
+
         with torch.no_grad():
             for batch_idx, (data, labels) in enumerate(val_loader):
                 try:
+                    # 调试: 打印批次信息
+                    logger.info(f"验证批次 {batch_idx}: data.shape={data.shape}, labels.shape={labels.shape}")
+                    
                     data = data.to(self.device)
                     labels = labels.to(self.device)
 
