@@ -416,3 +416,19 @@ To github.com:KyleCream/EEGTokenizer.git
 [2026-03-19 23:43:07] 训练完成
 [2026-03-19 23:43:07] 删除训练标记文件
 [2026-03-19 23:43:07] 推送训练日志到 GitHub...
+[main 4c0217a] 训练日志: 2026-03-19 23:43:07
+ 3 files changed, 10376 insertions(+), 1069 deletions(-)
+To github.com:KyleCream/EEGTokenizer.git
+   8638045..4c0217a  main -> main
+[2026-03-19 23:43:19] 推送成功
+[2026-03-19 23:43:19] ========================================
+[2026-03-19 23:43:19] 脚本执行完成
+[2026-03-19 23:43:19] ========================================
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 44: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 50: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 51: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 59: log: 未找到命令
+[2026-03-20 00:00:02] ========================================
+[2026-03-20 00:00:02] 自动训练脚本启动（标记文件控制）
+[2026-03-20 00:00:02] ========================================
+[2026-03-20 00:00:02] 没有检测到训练标记文件 (.needs_training)，退出

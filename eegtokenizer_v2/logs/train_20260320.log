@@ -27,6 +27,9 @@
 2026-03-20 00:16:30,013 - eegtokenizer_v2.data.loader - INFO -   win_sel: (0.0, 4.0)
 2026-03-20 00:16:30,013 - eegtokenizer_v2.data.loader - INFO - 加载训练数据 (A01T.gdf)...
 2026-03-20 00:16:30,013 - eegtokenizer_v2.data.loader - INFO - 加载训练集: /home/zengkai/model_compare/data/BNCI2014_001/A01T.gdf
+/home/zengkai/conda/envs/mamba_cuda121/lib/python3.11/contextlib.py:144: RuntimeWarning: Channel names are not unique, found duplicates for: {'EEG'}. Applying running numbers for duplicates.
+  next(self.gen)
+Used Annotations descriptions: ['1023', '1072', '276', '277', '32766', '768', '769', '770', '771', '772']
 2026-03-20 00:16:31,930 - eegtokenizer_v2.data.loader - INFO - 重采样: 1001 → 1000 个采样点
 2026-03-20 00:16:32,092 - eegtokenizer_v2.data.loader - INFO - 数据集加载完成
 2026-03-20 00:16:32,092 - eegtokenizer_v2.data.loader - INFO -   被试: A01
@@ -35,7 +38,10 @@
 2026-03-20 00:16:32,092 - eegtokenizer_v2.data.loader - INFO -   标签形状: (288,)
 2026-03-20 00:16:32,092 - eegtokenizer_v2.data.loader - INFO - 加载测试数据 (A01E.gdf)...
 2026-03-20 00:16:32,092 - eegtokenizer_v2.data.loader - INFO - 加载测试集: /home/zengkai/model_compare/data/BNCI2014_001/A01E.gdf
+/home/zengkai/conda/envs/mamba_cuda121/lib/python3.11/contextlib.py:144: RuntimeWarning: Channel names are not unique, found duplicates for: {'EEG'}. Applying running numbers for duplicates.
+  next(self.gen)
 2026-03-20 00:16:33,243 - eegtokenizer_v2.data.loader - INFO - 加载测试集标签: /home/zengkai/model_compare/data/BNCI2014_001/Data sets 2a_true_labels/A01E.mat
+Used Annotations descriptions: ['1023', '1072', '276', '277', '32766', '768', '783']
 2026-03-20 00:16:33,372 - eegtokenizer_v2.data.loader - INFO - 重采样: 1001 → 1000 个采样点
 2026-03-20 00:16:33,534 - eegtokenizer_v2.data.loader - INFO - 数据集加载完成
 2026-03-20 00:16:33,534 - eegtokenizer_v2.data.loader - INFO -   被试: A01
@@ -61,6 +67,8 @@
 2026-03-20 00:16:35,482 - eegtokenizer_v2.training.trainer - INFO -   批次数: 3
 2026-03-20 00:16:35,482 - eegtokenizer_v2.training.trainer - INFO -   样本数: 87
 2026-03-20 00:16:35,484 - eegtokenizer_v2.training.trainer - INFO - 验证批次 0: data.shape=torch.Size([32, 22, 1000]), labels.shape=torch.Size([32])
+/home/zengkai/conda/envs/mamba_cuda121/lib/python3.11/site-packages/torch/nn/modules/transformer.py:502: UserWarning: The PyTorch API of nested tensors is in prototype stage and will change in the near future. (Triggered internally at ../aten/src/ATen/NestedTensorImpl.cpp:178.)
+  output = torch._nested_tensor_from_mask(
 2026-03-20 00:16:35,557 - eegtokenizer_v2.training.trainer - INFO - 验证批次 1: data.shape=torch.Size([32, 22, 1000]), labels.shape=torch.Size([32])
 2026-03-20 00:16:35,562 - eegtokenizer_v2.training.trainer - INFO - 验证批次 2: data.shape=torch.Size([23, 22, 1000]), labels.shape=torch.Size([23])
 2026-03-20 00:16:35,571 - eegtokenizer_v2.training.trainer - INFO - Epoch 0/100 - Train Loss: 1.4433, Acc: 0.2388 | Val Loss: 1.4378, Acc: 0.2299
