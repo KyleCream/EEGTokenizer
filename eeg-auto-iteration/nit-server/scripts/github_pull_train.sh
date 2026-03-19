@@ -100,8 +100,8 @@ if [ $? -eq 0 ]; then
 
     # 检查是否有日志文件
     if ls eegtokenizer_v2/logs/*.log 1> /dev/null 2>&1; then
-        # 添加日志目录
-        git add eegtokenizer_v2/logs/*.log >> "$CRON_LOG" 2>&1
+        # 强制添加日志文件 (因为被 .gitignore 忽略)
+        git add -f eegtokenizer_v2/logs/*.log >> "$CRON_LOG" 2>&1
 
         # 检查是否有待提交的内容
         if git diff --cached --quiet; then
@@ -139,10 +139,17 @@ else
     log "错误：训练失败，查看日志: $TRAINING_LOG"
     log "保留训练标记文件以便下次重试"
 
-    # 即使失败也尝试推送日志
-    git add eegtokenizer_v2/logs/*.log >> "$CRON_LOG" 2>&1
-    git commit -m "训练失败日志: $(date '+%Y-%m-%d %H:%M:%S')" >> "$CRON_LOG" 2>&1
-    git push origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
+    # 即使失败也尝试推送日志 (强制添加被 .gitignore 忽略的文件)
+    if ls eegtokenizer_v2/logs/*.log 1> /dev/null 2>&1; then
+        git add -f eegtokenizer_v2/logs/*.log >> "$CRON_LOG" 2>&1
+
+        if git diff --cached --quiet; then
+            log "没有新的日志文件需要提交"
+        else
+            git commit -m "训练失败日志: $(date '+%Y-%m-%d %H:%M:%S')" >> "$CRON_LOG" 2>&1
+            git push origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
+        fi
+    fi
 
     exit 1
 fi
