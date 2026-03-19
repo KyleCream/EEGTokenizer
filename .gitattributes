@@ -1,0 +1,11 @@
+# 确保 shell 脚本有执行权限
+eeg-auto-iteration/**/*.sh eol=lf executable
+*.sh eol=lf executable
+
+# Python 文件使用 LF 换行
+*.py eol=lf
+
+# 配置文件使用 LF 换行
+*.yaml eol=lf
+*.yml eol=lf
+*.json eol=lf
