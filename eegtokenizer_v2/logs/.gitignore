@@ -1,0 +1,6 @@
+# 日志文件
+*.log
+
+# 保留 README 和 .gitkeep
+!README.md
+!.gitkeep
