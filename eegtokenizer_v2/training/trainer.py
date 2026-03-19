@@ -152,17 +152,15 @@ class Trainer:
         all_preds = []
         all_labels = []
 
-        # 调试: 打印验证集信息
-        logger.info(f"验证集信息:")
-        logger.info(f"  批次数: {len(val_loader)}")
-        logger.info(f"  样本数: {len(val_loader.dataset)}")
+        # 调试: 每 10 个 epoch 打印一次验证集信息
+        if self.current_epoch % 10 == 0:
+            logger.info(f"验证集信息:")
+            logger.info(f"  批次数: {len(val_loader)}")
+            logger.info(f"  样本数: {len(val_loader.dataset)}")
 
         with torch.no_grad():
             for batch_idx, (data, labels) in enumerate(val_loader):
                 try:
-                    # 调试: 打印批次信息
-                    logger.info(f"验证批次 {batch_idx}: data.shape={data.shape}, labels.shape={labels.shape}")
-                    
                     data = data.to(self.device)
                     labels = labels.to(self.device)
 
@@ -226,16 +224,25 @@ class Trainer:
                 'val': val_metrics
             })
 
-            # 日志
-            logger.info(
-                f"Epoch {epoch}/{epochs} - "
-                f"Train Loss: {train_metrics['loss']:.4f}, Acc: {train_metrics['accuracy']:.4f} | "
-                f"Val Loss: {val_metrics['loss']:.4f}, Acc: {val_metrics['accuracy']:.4f}"
-            )
+            # 日志 - 每 10 个 epoch 打印一次，或者有新的最佳模型
+            is_best = val_metrics['accuracy'] > self.best_val_acc
+            should_log = (epoch % 10 == 0) or (epoch == epochs - 1) or is_best
+
+            if should_log:
+                logger.info(
+                    f"Epoch {epoch}/{epochs} - "
+                    f"Train Loss: {train_metrics['loss']:.4f}, Acc: {train_metrics['accuracy']:.4f} | "
+                    f"Val Loss: {val_metrics['loss']:.4f}, Acc: {val_metrics['accuracy']:.4f}"
+                )
 
             # 记录最佳模型
-            if val_metrics['accuracy'] > self.best_val_acc:
+            if is_best:
                 self.best_val_acc = val_metrics['accuracy']
+                if not should_log:  # 如果还没打印过，单独打印最佳模型信息
+                    logger.info(
+                        f"Epoch {epoch}/{epochs} - "
+                        f"Val Acc: {val_metrics['accuracy']:.4f}"
+                    )
                 logger.info(f"  ✓ 最佳模型: epoch {epoch}, val_acc: {self.best_val_acc:.4f}")
 
         # 保存训练历史（不保存 .pth 文件，避免推送困难）
