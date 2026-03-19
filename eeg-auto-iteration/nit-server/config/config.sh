@@ -37,8 +37,12 @@ TRAIN_SCRIPT="train.py"
 # 训练配置文件
 TRAIN_CONFIG="eegtokenizer_v2/configs/experiments.yaml::adc_4bit"
 
+# GPU 设备 ID (0 或 1,nit 有两张显卡)
+# 可以使用 nvidia-smi 查看哪张显卡比较空闲
+GPU_DEVICE="1"
+
 # 其他训练参数
-TRAIN_ARGS="--config $TRAIN_CONFIG"
+TRAIN_ARGS="--config $TRAIN_CONFIG --gpu $GPU_DEVICE"
 
 # ==================== 数据配置 ====================
 # 数据集配置
