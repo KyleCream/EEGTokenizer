@@ -212,11 +212,16 @@ class ADCTokenizer(BaseTokenizer):
             n_patches: patch 数量
 
         Returns:
-            mask: (batch, n_patches), True 表示有效
+            mask: (batch, n_patches), False 表示有效, True 表示 padding
         """
-        # 目前所有 patch 都是有效的，所以 mask 全为 True
-        mask = torch.ones(batch_size, n_patches, dtype=torch.bool)
-        return mask.to(self.projection.weight.device) if hasattr(self, 'projection') else torch.ones(batch_size, n_patches, dtype=torch.bool)
+        # 目前所有 patch 都是有效的，所以 mask 全为 False
+        # PyTorch Transformer: True = padding (忽略), False = valid
+        mask = torch.zeros(batch_size, n_patches, dtype=torch.bool)
+        
+        if hasattr(self, 'projection'):
+            return mask.to(self.projection.weight.device)
+        else:
+            return mask
 
 
 # ==================== 量化器 ====================
