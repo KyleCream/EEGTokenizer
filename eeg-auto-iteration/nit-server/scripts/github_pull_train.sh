@@ -90,30 +90,30 @@ python $TRAIN_SCRIPT $TRAIN_ARGS >> "$TRAINING_LOG" 2>&1
 
 if [ $? -eq 0 ]; then
     log "训练完成"
-    
+
     # 训练成功后删除标记文件
     log "删除训练标记文件"
     rm -f "$TRAINING_FLAG"
-    
+
     # 只推送日志（不推送 .pth 模型文件）
     log "推送训练日志到 GitHub..."
-    
+
     # 检查是否有日志文件
     if ls eegtokenizer_v2/logs/*.log 1> /dev/null 2>&1; then
         # 添加日志目录
         git add eegtokenizer_v2/logs/*.log >> "$CRON_LOG" 2>&1
-        
+
         # 检查是否有待提交的内容
         if git diff --cached --quiet; then
             log "没有新的日志文件需要提交"
         else
             # 提交
             git commit -m "训练日志: $(date '+%Y-%m-%d %H:%M:%S')" >> "$CRON_LOG" 2>&1
-            
+
             # 推送
             MAX_RETRIES=3
             RETRY_COUNT=0
-            
+
             while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
                 git push origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
                 if [ $? -eq 0 ]; then
@@ -134,20 +134,16 @@ if [ $? -eq 0 ]; then
     else
         log "没有找到日志文件"
     fi
-            fi
-        fi
-    done
-    
+
 else
     log "错误：训练失败，查看日志: $TRAINING_LOG"
     log "保留训练标记文件以便下次重试"
-    
+
     # 即使失败也尝试推送日志
-    git add eegtokenizer_v2/logs/ >> "$CRON_LOG" 2>&1
-    git add *.log >> "$CRON_LOG" 2>&1
+    git add eegtokenizer_v2/logs/*.log >> "$CRON_LOG" 2>&1
     git commit -m "训练失败日志: $(date '+%Y-%m-%d %H:%M:%S')" >> "$CRON_LOG" 2>&1
     git push origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
-    
+
     exit 1
 fi
 
