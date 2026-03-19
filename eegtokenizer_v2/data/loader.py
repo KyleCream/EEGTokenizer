@@ -256,42 +256,53 @@ class EEGDataLoader:
 
     def load_data(
         self,
-        train_ratio: float = 0.7,
-        val_ratio: float = 0.15,
+        train_ratio: float = 0.8,
         batch_size: int = 32,
         num_workers: int = 0
     ) -> Tuple[DataLoader, DataLoader, DataLoader]:
         """
         加载数据
 
+        正确的加载逻辑:
+        1. 加载 A01T.gdf → 288 trials (训练数据)
+        2. 加载 A01E.gdf → 288 trials (测试数据)
+        3. 从 A01T 中划分训练集和验证集
+
         Returns:
             train_loader, val_loader, test_loader
         """
-        # 加载数据集
-        full_dataset = BCIDataset(
+        # 1. 加载训练数据 (A01T.gdf)
+        logger.info("加载训练数据 (A01T.gdf)...")
+        train_val_dataset = BCIDataset(
             file_path=self.data_dir,
-            subject=self.subject_id,  # 直接传字符串
+            subject=self.subject_id,
             win_sel=self.win_sel,
-            sessions=self.sessions
+            sessions='train'  # 加载 A01T.gdf
+        )
+        
+        # 2. 加载测试数据 (A01E.gdf)
+        logger.info("加载测试数据 (A01E.gdf)...")
+        test_dataset = BCIDataset(
+            file_path=self.data_dir,
+            subject=self.subject_id,
+            win_sel=self.win_sel,
+            sessions='test'  # 加载 A01E.gdf
         )
 
-        # 划分训练/验证/测试集
-        total_size = len(full_dataset)
-        train_size = int(total_size * train_ratio)
-        val_size = int(total_size * val_ratio)
-
-        # 确保3个集合的总和等于总大小
-        test_size = total_size - train_size - val_size
+        # 3. 从训练数据中划分训练集和验证集
+        total_train_size = len(train_val_dataset)
+        train_size = int(total_train_size * train_ratio)
+        val_size = total_train_size - train_size
 
         logger.info(f"数据集划分:")
-        logger.info(f"  总样本: {total_size}")
+        logger.info(f"  训练+验证集 (A01T): {total_train_size} 样本")
+        logger.info(f"  测试集 (A01E): {len(test_dataset)} 样本")
         logger.info(f"  训练集: {train_size} ({train_ratio*100}%)")
-        logger.info(f"  验证集: {val_size} ({val_ratio*100}%)")
-        logger.info(f"  测试集: {test_size} ({(1-train_ratio-val_ratio)*100}%)")
+        logger.info(f"  验证集: {val_size} ({(1-train_ratio)*100}%)")
 
-        train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(
-            full_dataset,
-            [train_size, val_size, test_size]
+        train_dataset, val_dataset = torch.utils.data.random_split(
+            train_val_dataset,
+            [train_size, val_size]
         )
 
         # 创建 DataLoader
@@ -302,7 +313,7 @@ class EEGDataLoader:
             num_workers=num_workers
         )
         
-        # 验证集和测试集使用较小的 batch_size,避免批次太小
+        # 验证集和测试集使用较小的 batch_size
         val_batch_size = min(batch_size, len(val_dataset))
         test_batch_size = min(batch_size, len(test_dataset))
         
