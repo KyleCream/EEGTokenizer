@@ -120,6 +120,12 @@ class BCIDataset(Dataset):
             # 这意味着：对每个通道，计算所有时间点的均值，然后减去
             data_return = data_return - np.mean(data_return, axis=1, keepdims=True)
 
+            # 重采样到 1000 个点
+            if data_return.shape[2] != 1000:
+                from scipy import signal
+                logger.info(f"重采样: {data_return.shape[2]} → 1000 个采样点")
+                data_return = signal.resample(data_return, 1000, axis=2)
+
             data_subject['train'] = {
                 'X': data_return,
                 'Y': class_return
@@ -127,15 +133,15 @@ class BCIDataset(Dataset):
 
         # ==================== 测试集数据 ====================
         if self.sessions in ['test', 'both']:
-            file_to_load = f"{self.file_path}/A0{self.subject:02d}E.gdf"
+            # 使用原始 subject 字符串 (如 "A01")
+            file_to_load = f"{self.file_path}/{self.subject}E.gdf"
             logger.info(f"加载测试集: {file_to_load}")
 
             raw_data = mne.io.read_raw_gdf(file_to_load, preload=True, verbose=False)
             fs = raw_data.info['sfreq']
 
             # 加载真实标签（.mat 文件）
-            # 标签路径：/home/zengkai/model_compare/data/BNCI2014_001/Data sets 2a_true_labels/A0{self.subject:02d}E.mat
-            labels_mat_path = f"{self.file_path}/Data sets 2a_true_labels/A0{self.subject:02d}E.mat"
+            labels_mat_path = f"{self.file_path}/Data sets 2a_true_labels/{self.subject}E.mat"
             logger.info(f"加载测试集标签: {labels_mat_path}")
             
             labels_mat = loadmat(labels_mat_path)
@@ -182,6 +188,12 @@ class BCIDataset(Dataset):
             # axis=1 是通道维度（n_channels）
             # 这意味着：对每个通道，计算所有时间点的均值，然后减去
             data_return = data_return - np.mean(data_return, axis=1, keepdims=True)
+
+            # 重采样到 1000 个点
+            if data_return.shape[2] != 1000:
+                from scipy import signal
+                logger.info(f"重采样: {data_return.shape[2]} → 1000 个采样点")
+                data_return = signal.resample(data_return, 1000, axis=2)
 
             data_subject['test'] = {
                 'X': data_return,
@@ -234,7 +246,7 @@ class EEGDataLoader:
         data_dir: str = None,
         subject_id: str = "A01",
         sessions: str = "train",
-        win_sel: Tuple[float, float] = (0.0, 4.0)
+        win_sel: Tuple[float, float] = (-2.0, 5.0)  # 修改为 [-2, 5]
     ):
         # 如果未指定 data_dir，使用默认路径
         if data_dir is None:
