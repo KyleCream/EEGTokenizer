@@ -172,17 +172,17 @@ class ADCTokenizer(BaseTokenizer):
             x: (batch, channels, timepoints)
 
         Returns:
-            patches: (batch, channels, window_length, n_patches)
+            patches: (batch, channels, n_patches, window_length)
         """
         batch_size, channels, timepoints = x.shape
 
         # unfold: 滑动窗口
-        patches = x.unfold(2, self.window_length, self.step_length)  # (batch, channels, n_patches, window_length)
+        # unfold(2, window_length, step_length)
+        # dim=2 是时间维度
+        patches = x.unfold(2, self.window_length, self.step_length)
+        # 输出: (batch, channels, n_patches, window_length)
 
-        # 转置: (batch, channels, window_length, n_patches)
-        patches = patches.permute(0, 1, 3, 2)
-
-        return patches
+        return patches  # 不需要 permute!
 
     def _project_to_d_model(self, aggregated: torch.Tensor) -> torch.Tensor:
         """
@@ -370,13 +370,13 @@ class MeanAggregator(nn.Module):
         时间维度平均
 
         Args:
-            x: (batch, channels, window_length, n_patches)
+            x: (batch, channels, n_patches, window_length)
 
         Returns:
             aggregated: (batch, n_patches, channels)
         """
-        # 对时间维度求平均
-        return x.mean(dim=2)
+        # 对时间维度求平均 (dim=3)
+        return x.mean(dim=3).permute(0, 2, 1)  # (batch, n_patches, channels)
 
 
 class AttentionAggregator(nn.Module):
