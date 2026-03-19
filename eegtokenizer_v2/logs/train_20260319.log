@@ -11425,3 +11425,37 @@ RuntimeError: to_padded_tensor: at least one constituent tensor should have non-
 2026-03-19 22:04:53,606 - __main__ - INFO - 自动推送训练结果到 GitHub...
 2026-03-19 22:04:53,620 - __main__ - WARNING - 自动推送失败: Command '['git', 'add', 'eegtokenizer_v2/logs/']' returned non-zero exit status 1.
 2026-03-19 22:04:53,620 - __main__ - WARNING - 请手动推送: git push origin main
+2026-03-19 22:25:08,950 - __main__ - INFO - 日志文件: /home/zengkai/EEGTokenizer/eegtokenizer_v2/logs/train_latest.log
+2026-03-19 22:25:08,951 - __main__ - INFO - 训练开始时间: 2026-03-19 22:25:08
+2026-03-19 22:25:08,951 - __main__ - INFO - ============================================================
+2026-03-19 22:25:08,951 - __main__ - INFO - EEGTokenizer 训练开始
+2026-03-19 22:25:08,951 - __main__ - INFO - ============================================================
+2026-03-19 22:25:08,951 - __main__ - INFO - 配置文件: eegtokenizer_v2/configs/experiments.yaml::adc_4bit
+2026-03-19 22:25:08,951 - __main__ - INFO - GPU: cuda:1
+2026-03-19 22:25:08,951 - __main__ - INFO - 调试模式: False
+2026-03-19 22:25:08,951 - __main__ - INFO - 项目根目录: /home/zengkai/EEGTokenizer
+2026-03-19 22:25:08,951 - __main__ - INFO - ============================================================
+2026-03-19 22:25:08,951 - __main__ - INFO - 创建模型...
+2026-03-19 22:25:08,951 - eegtokenizer_v2.tokenizers.adc - INFO - ADC Tokenizer 初始化完成
+2026-03-19 22:25:08,951 - eegtokenizer_v2.tokenizers.adc - INFO -   window_length: 250, step_length: 125
+2026-03-19 22:25:08,951 - eegtokenizer_v2.tokenizers.adc - INFO -   num_bits: 4 (16 级)
+2026-03-19 22:25:08,951 - eegtokenizer_v2.tokenizers.adc - INFO -   quant_type: scalar, agg_type: mean
+2026-03-19 22:25:08,951 - eegtokenizer_v2.tokenizers.adc - INFO -   d_model: 24
+2026-03-19 22:25:08,956 - eegtokenizer_v2.models.classifier - INFO - EEGClassifier 初始化完成
+2026-03-19 22:25:08,956 - eegtokenizer_v2.models.classifier - INFO -   num_classes: 4
+2026-03-19 22:25:08,956 - eegtokenizer_v2.models.classifier - INFO -   nhead: 8, num_layers: 2
+2026-03-19 22:25:08,956 - eegtokenizer_v2.models.classifier - INFO -   dropout: 0.1
+2026-03-19 22:25:08,956 - __main__ - INFO - 模型: ADC + ADCTokenizer
+2026-03-19 22:25:08,956 - __main__ - INFO - 加载数据...
+2026-03-19 22:25:08,956 - eegtokenizer_v2.data.loader - INFO - EEGDataLoader 初始化
+2026-03-19 22:25:08,956 - eegtokenizer_v2.data.loader - INFO -   data_dir: /home/zengkai/model_compare/data/BNCI2014_001
+2026-03-19 22:25:08,956 - eegtokenizer_v2.data.loader - INFO -   subject_id: A01
+2026-03-19 22:25:08,956 - eegtokenizer_v2.data.loader - INFO -   sessions: train
+2026-03-19 22:25:08,956 - eegtokenizer_v2.data.loader - INFO -   win_sel: (0.0, 4.0)
+2026-03-19 22:25:08,956 - __main__ - ERROR - ❌ 训练失败: EEGDataLoader.load_data() got an unexpected keyword argument 'val_ratio'
+2026-03-19 22:25:08,956 - __main__ - ERROR - Traceback (most recent call last):
+  File "/home/zengkai/EEGTokenizer/train.py", line 183, in main
+    train_loader, val_loader, test_loader = data_loader.load_data(
+                                            ^^^^^^^^^^^^^^^^^^^^^^
+TypeError: EEGDataLoader.load_data() got an unexpected keyword argument 'val_ratio'
+
