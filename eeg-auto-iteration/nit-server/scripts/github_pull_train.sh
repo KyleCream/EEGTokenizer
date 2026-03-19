@@ -98,30 +98,42 @@ if [ $? -eq 0 ]; then
     # 只推送日志（不推送 .pth 模型文件）
     log "推送训练日志到 GitHub..."
     
-    # 只添加日志目录
-    git add eegtokenizer_v2/logs/ >> "$CRON_LOG" 2>&1
-    git add *.log >> "$CRON_LOG" 2>&1
-    
-    # 提交
-    git commit -m "训练日志: $(date '+%Y-%m-%d %H:%M:%S')" >> "$CRON_LOG" 2>&1
-    
-    # 推送
-    MAX_RETRIES=3
-    RETRY_COUNT=0
-    
-    while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-        git push origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
-        if [ $? -eq 0 ]; then
-            log "推送成功"
-            break
+    # 检查是否有日志文件
+    if ls eegtokenizer_v2/logs/*.log 1> /dev/null 2>&1; then
+        # 添加日志目录
+        git add eegtokenizer_v2/logs/*.log >> "$CRON_LOG" 2>&1
+        
+        # 检查是否有待提交的内容
+        if git diff --cached --quiet; then
+            log "没有新的日志文件需要提交"
         else
-            RETRY_COUNT=$((RETRY_COUNT + 1))
-            if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-                log "推送失败，10秒后重试 ($RETRY_COUNT/$MAX_RETRIES)..."
-                sleep 10
-            else
-                log "推送失败，已达到最大重试次数"
-                exit 1
+            # 提交
+            git commit -m "训练日志: $(date '+%Y-%m-%d %H:%M:%S')" >> "$CRON_LOG" 2>&1
+            
+            # 推送
+            MAX_RETRIES=3
+            RETRY_COUNT=0
+            
+            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                git push origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
+                if [ $? -eq 0 ]; then
+                    log "推送成功"
+                    break
+                else
+                    RETRY_COUNT=$((RETRY_COUNT + 1))
+                    if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                        log "推送失败，10秒后重试 ($RETRY_COUNT/$MAX_RETRIES)..."
+                        sleep 10
+                    else
+                        log "推送失败，已达到最大重试次数"
+                        exit 1
+                    fi
+                fi
+            done
+        fi
+    else
+        log "没有找到日志文件"
+    fi
             fi
         fi
     done
