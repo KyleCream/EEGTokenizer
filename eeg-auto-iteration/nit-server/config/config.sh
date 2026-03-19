@@ -56,15 +56,16 @@ WIN_TMAX=1.0
 # ==================== 日志配置 ====================
 # 日志配置
 
-# 日志目录
-LOG_DIR="$HOME/eeg-auto-logs"
+# 训练日志目录 (与 train.py 保持一致)
+LOG_DIR="$PROJECT_DIR/eegtokenizer_v2/logs"
 mkdir -p "$LOG_DIR"
 
 # 训练日志文件
-TRAINING_LOG="$LOG_DIR/training_$(date +%Y%m%d).log"
+TRAINING_LOG="$LOG_DIR/train_$(date +%Y%m%d).log"
 
-# Cron 日志文件
-CRON_LOG="$LOG_DIR/cron_$(date +%Y%m%d).log"
+# Cron 日志文件 (独立存放)
+CRON_LOG="$HOME/eeg-auto-logs/cron_$(date +%Y%m%d).log"
+mkdir -p "$HOME/eeg-auto-logs"
 
 # ==================== Cron 配置 ====================
 # Cron 轮询配置
