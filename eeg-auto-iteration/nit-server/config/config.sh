@@ -37,11 +37,33 @@ TRAIN_SCRIPT="train.py"
 # 训练配置文件
 TRAIN_CONFIG="eegtokenizer_v2/configs/experiments.yaml::adc_4bit"
 
-# GPU 设备 ID (0 或 1,nit 有两张显卡)
-# 可以使用 nvidia-smi 查看哪张显卡比较空闲
-GPU_DEVICE="1"
+# ==================== GPU 自动选择 ====================
+# 智能选择空闲显卡
 
-# 其他训练参数
+select_free_gpu() {
+    log "选择空闲显卡..."
+    
+    # 获取两张显卡的内存使用情况(MiB)
+    GPU0_MEM=$(nvidia-smi -i 0 --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null || echo "99999")
+    GPU1_MEM=$(nvidia-smi -i 1 --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null || echo "99999")
+    
+    log "GPU 0 内存使用: ${GPU0_MEM} MiB"
+    log "GPU 1 内存使用: ${GPU1_MEM} MiB"
+    
+    # 选择内存使用较少的显卡
+    if [ "$GPU0_MEM" -le "$GPU1_MEM" ]; then
+        export GPU_DEVICE="0"
+        log "✅ 选择 GPU 0 (内存使用较少)"
+    else
+        export GPU_DEVICE="1"
+        log "✅ 选择 GPU 1 (内存使用较少)"
+    fi
+}
+
+# 调用函数选择显卡
+select_free_gpu
+
+# 其他训练参数(动态使用选择的 GPU)
 TRAIN_ARGS="--config $TRAIN_CONFIG --gpu $GPU_DEVICE"
 
 # ==================== 数据配置 ====================

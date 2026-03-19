@@ -43,14 +43,14 @@ def setup_logging(log_dir: str):
     log_dir = Path(log_dir)
     log_dir.mkdir(parents=True, exist_ok=True)
 
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_file = log_dir / f'train_{timestamp}.log'
+    # 固定文件名(覆盖模式)
+    log_file = log_dir / 'train_latest.log'
 
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(log_file),
+            logging.FileHandler(log_file, mode='w'),  # 覆盖模式
             logging.StreamHandler()
         ],
         force=True  # 强制重新配置
@@ -59,6 +59,7 @@ def setup_logging(log_dir: str):
     # 创建根日志记录器（用于文件和控制台）
     logger = logging.getLogger(__name__)
     logger.info(f"日志文件: {log_file}")
+    logger.info(f"训练开始时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     return logger
 
