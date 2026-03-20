@@ -26,8 +26,8 @@ eegtokenizer_v2/checkpoints/
 *.ckpt
 *.safetensors
 
-# 训练标记文件
-.needs_training
+# 训练标记文件（允许跟踪 .needs_training，但忽略其他训练标记）
+# .needs_training  ← 已移除，允许跟踪
 
 # Data
 data/BCI_IV_2a/*.gdf
