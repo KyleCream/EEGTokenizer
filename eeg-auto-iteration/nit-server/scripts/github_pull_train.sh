@@ -49,13 +49,18 @@ fi
 
 log "检测到训练标记文件，准备运行训练..."
 
-# 读取标记文件内容（可能包含训练参数）
-TRAINING_PARAMS=$(cat "$TRAINING_FLAG" 2>/dev/null)
+# 读取标记文件内容（配置名称，如 adc_4bit）
+CONFIG_NAME=$(cat "$TRAINING_FLAG" 2>/dev/null)
 
-if [ -n "$TRAINING_PARAMS" ]; then
-    log "训练参数: $TRAINING_PARAMS"
-    # 如果标记文件有内容，使用其中的参数
-    TRAIN_ARGS="$TRAINING_PARAMS"
+if [ -n "$CONFIG_NAME" ]; then
+    log "配置名称: $CONFIG_NAME"
+    # 自动构建完整的训练参数
+    TRAIN_ARGS="--config eegtokenizer_v2/configs/experiments.yaml::$CONFIG_NAME"
+    log "训练参数: $TRAIN_ARGS"
+else
+    # 如果标记文件为空，使用默认配置
+    log "标记文件为空，使用默认配置"
+    TRAIN_ARGS="--config $TRAIN_CONFIG"
 fi
 
 if [ $? -ne 0 ]; then
