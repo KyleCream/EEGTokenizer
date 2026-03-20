@@ -182,8 +182,93 @@ adc_attention:
       T_max: 50
     save_dir: "./eegtokenizer_v2/checkpoints/adc_attention"  # 相对路径
 
-  # 评估配置
-  evaluation:
-    reconstruction: true
-    probe_tasks: true
-    spectral: true
+  training:
+    epochs: 100
+    task: "classification"  # 分类任务
+    optimizer:
+      name: "Adam"
+      lr: 0.001
+    scheduler:
+      name: "CosineAnnealingLR"
+      T_max: 50
+
+# ADC 4bit 重构任务
+adc_4bit_reconstruction:
+  model:
+    type: "ADC"
+    tokenizer:
+      name: "ADCTokenizer"
+      window_length: 250
+      step_length: 125
+      num_bits: 4
+      quant_type: "scalar"
+      agg_type: "mean"
+    classifier:
+      type: "Transformer"
+      num_classes: 4
+      nhead: 8
+      num_layers: 2
+      dropout: 0.1
+
+  data:
+    dataset: "BCI_IV_2a"
+    data_dir: "/home/zengkai/model_compare/data/BNCI2014_001"
+    data_mode: "single"
+    subject_id: "A01"
+    sessions: "train"
+    win_sel: [-2.0, 5.0]
+    train_ratio: 0.7
+    batch_size: 32
+    num_workers: 0
+
+  training:
+    epochs: 100
+    task: "reconstruction"  # 重构任务
+    optimizer:
+      name: "Adam"
+      lr: 0.001
+    scheduler:
+      name: "CosineAnnealingLR"
+      T_max: 50
+    save_dir: "./eegtokenizer_v2/checkpoints/adc_4bit_reconstruction"
+
+# ADC 4bit 线性探针任务（评估已训练模型）
+adc_4bit_probe:
+  model:
+    type: "ADC"
+    tokenizer:
+      name: "ADCTokenizer"
+      window_length: 250
+      step_length: 125
+      num_bits: 4
+      quant_type: "scalar"
+      agg_type: "mean"
+    classifier:
+      type: "Transformer"
+      num_classes: 4
+      nhead: 8
+      num_layers: 2
+      dropout: 0.1
+
+  data:
+    dataset: "BCI_IV_2a"
+    data_dir: "/home/zengkai/model_compare/data/BNCI2014_001"
+    data_mode: "single"
+    subject_id: "A01"
+    sessions: "train"
+    win_sel: [-2.0, 5.0]
+    train_ratio: 0.7
+    val_ratio: 0.15
+    batch_size: 32
+    num_workers: 0
+
+  training:
+    epochs: 50
+    task: "probe"  # 探针任务（冻结 tokenizer）
+    optimizer:
+      name: "Adam"
+      lr: 0.001
+    scheduler:
+      name: "CosineAnnealingLR"
+      T_max: 25
+    save_dir: "./eegtokenizer_v2/checkpoints/adc_4bit_probe"

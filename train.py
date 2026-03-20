@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
 """
-统一训练入口（修正版 v2 - 移动到项目根目录）
-
-用法：
-    conda activate mamba_cuda121
-    python train.py --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit
+统一训练入口（重构版）
 
 支持：
-1. 配置文件（YAML）
-2. 命令行参数
-3. 完整的日志管理
-4. 错误处理
-5. 模型保存
-6. 自动推送到 GitHub
+1. 多种训练任务（分类、重构、探针）
+2. 配置文件（YAML）
+3. 命令行参数
+4. 完整的日志管理
+5. 错误处理
+6. 模型保存
+7. 自动推送到 GitHub
 
-注意：
-- 必须在 mamba_cuda121 环境中运行
-- 数据路径：/home/zengkai/model_compare/data/BNCI2014_001/
+用法：
+    # 分类任务（默认）
+    python train.py --config configs/experiments.yaml::adc_4bit
+
+    # 重构任务
+    python train.py --config configs/experiments.yaml::adc_4bit_recon
+
+    # 探针任务（评估）
+    python train.py --config configs/experiments.yaml::adc_4bit_probe
 """
 
 import sys
@@ -28,14 +31,14 @@ import yaml
 import traceback
 from datetime import datetime
 
-# 添加项目根目录到路径
-project_root = Path(__file__).parent
-sys.path.insert(0, str(project_root))
+# 添加路径
+sys.path.insert(0, str(Path(__file__).parent))
 
 from eegtokenizer_v2.tokenizers import ADCTokenizer
 from eegtokenizer_v2.models import EEGClassifier
 from eegtokenizer_v2.data.loader import EEGDataLoader
 from eegtokenizer_v2.training.trainer import Trainer
+
 
 # 配置日志
 def setup_logging(log_dir: str):
@@ -43,23 +46,21 @@ def setup_logging(log_dir: str):
     log_dir = Path(log_dir)
     log_dir.mkdir(parents=True, exist_ok=True)
 
-    # 固定文件名(覆盖模式)
-    log_file = log_dir / 'train_latest.log'
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    log_file = log_dir / f'train_{timestamp}.log'
 
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(log_file, mode='w'),  # 覆盖模式
+            logging.FileHandler(log_file),
             logging.StreamHandler()
         ],
-        force=True  # 强制重新配置
+        force=True
     )
 
-    # 创建根日志记录器（用于文件和控制台）
     logger = logging.getLogger(__name__)
     logger.info(f"日志文件: {log_file}")
-    logger.info(f"训练开始时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     return logger
 
@@ -150,20 +151,23 @@ def main():
         print(traceback.format_exc())
         sys.exit(1)
 
-    # 设置日志（使用项目根目录）
-    project_root = Path(__file__).parent
+    # 设置日志
+    project_root = Path(__file__).parent.parent
     logs_dir = project_root / 'eegtokenizer_v2' / 'logs'
     logs_dir.mkdir(parents=True, exist_ok=True)
-    
+
     logger = setup_logging(str(logs_dir))
-    
+
     logger.info("=" * 60)
     logger.info("EEGTokenizer 训练开始")
     logger.info("=" * 60)
     logger.info(f"配置文件: {args.config}")
     logger.info(f"GPU: {device}")
     logger.info(f"调试模式: {args.debug}")
-    logger.info(f"项目根目录: {project_root}")
+
+    # 显示任务类型
+    task_type = config.get('training', {}).get('task', 'classification')
+    logger.info(f"任务类型: {task_type}")
     logger.info("=" * 60)
 
     try:
@@ -177,14 +181,26 @@ def main():
         data_loader = EEGDataLoader(
             data_dir=config['data']['data_dir'],
             subject_id=config['data']['subject_id'],
-            sessions=config['data'].get('sessions', 'train'),  # 默认 'train'
-            win_sel=tuple(config['data'].get('win_sel', [-2.0, 5.0]))  # 修改默认为 [-2, 5]
+            data_mode=config['data']['data_mode']
         )
-        train_loader, val_loader, test_loader = data_loader.load_data(
-            train_ratio=config['data']['train_ratio'],
-            batch_size=config['data']['batch_size'],
-            num_workers=config['data']['num_workers']
-        )
+
+        # 根据任务类型加载数据
+        if task_type == 'reconstruction':
+            # 重构任务只需要数据，不需要标签
+            train_loader, val_loader, _ = data_loader.load_single_subject(
+                train_ratio=config['data'].get('train_ratio', 0.7),
+                val_ratio=config['data'].get('val_ratio', 0.15),
+                batch_size=config['data']['batch_size'],
+                num_workers=config['data']['num_workers']
+            )
+        else:
+            # 分类任务和探针任务需要标签
+            train_loader, val_loader, _ = data_loader.load_single_subject(
+                train_ratio=config['data'].get('train_ratio', 0.7),
+                val_ratio=config['data'].get('val_ratio', 0.15),
+                batch_size=config['data']['batch_size'],
+                num_workers=config['data']['num_workers']
+            )
 
         # 创建训练器
         logger.info("创建训练器...")
@@ -197,52 +213,15 @@ def main():
         # 完成
         logger.info("=" * 60)
         logger.info("✅ 训练完成！")
-        logger.info(f"最佳验证准确率: {trainer.best_val_acc:.4f}")
+        logger.info(f"最佳指标: {trainer.best_metric:.4f}")
         logger.info(f"检查点保存位置: {trainer.save_dir}")
         logger.info("=" * 60)
 
         # 自动推送到 GitHub
-        logger.info("自动推送训练结果到 GitHub...")
-        import subprocess
-        try:
-            # 切换到项目根目录
-            import os
-            original_dir = os.getcwd()
-            os.chdir(project_root)
-
-            # 只添加日志目录（不添加 checkpoints，避免推送大的 .pth 文件）
-            subprocess.run(['git', 'add', 'eegtokenizer_v2/logs/'], check=True, capture_output=True)
-            
-            # 检查是否有变更
-            result = subprocess.run(['git', 'diff', '--cached', '--quiet'], capture_output=True)
-            if result.returncode == 0:
-                # 有变更，提交并推送
-                commit_msg = f"训练日志: {config['model']['tokenizer']['name']}_acc_{trainer.best_val_acc:.4f}"
-                subprocess.run(['git', 'commit', '-m', commit_msg], check=True, capture_output=True)
-                
-                # 推送（最多重试3次）
-                for retry in range(3):
-                    result = subprocess.run(['git', 'push', 'origin', 'main'], capture_output=True)
-                    if result.returncode == 0:
-                        logger.info("✓ 训练结果已推送到 GitHub")
-                        break
-                    else:
-                        if retry < 2:
-                            logger.warning(f"推送失败，10秒后重试 ({retry + 1}/3)...")
-                            import time
-                            time.sleep(10)
-                        else:
-                            logger.error("❌ 推送失败，请手动推送: git push origin main")
-                            logger.error(f"错误信息: {result.stderr.decode()}")
-            else:
-                logger.info("没有需要推送的变更")
-
-            # 恢复目录
-            os.chdir(original_dir)
-
-        except Exception as e:
-            logger.warning(f"自动推送失败: {e}")
-            logger.warning("请手动推送: git push origin main")
+        if not args.debug:
+            trainer.push_to_github(project_root)
+        else:
+            logger.info("调试模式：跳过 GitHub 推送")
 
     except Exception as e:
         logger.error(f"❌ 训练失败: {e}")
