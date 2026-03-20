@@ -230,11 +230,17 @@ class ProbeTask(BaseTask):
         data = batch['data'].to(self.device)
         labels = batch['labels'].to(self.device)
 
-        # 前向传播（只更新探针部分）
-        outputs = self.model(data, task='probe')
-        loss = self.criterion(outputs, labels)
+        # 前向传播（只获取特征，不训练 tokenizer）
+        features, _ = self.model(data, return_features=True)
 
-        return {'loss': loss, 'outputs': outputs, 'labels': labels}
+        # 使用简单的线性分类器
+        if not hasattr(self, 'probe_classifier'):
+            self.probe_classifier = nn.Linear(features.shape[-1], labels.max().item() + 1).to(self.device)
+
+        logits = self.probe_classifier(features.mean(dim=1))  # 全局平均池化
+        loss = self.criterion(logits, labels)
+
+        return {'loss': loss, 'outputs': logits, 'labels': labels}
 
     def validate_step(self, batch: Dict[str, torch.Tensor]) -> Dict[str, float]:
         """
@@ -249,13 +255,19 @@ class ProbeTask(BaseTask):
         data = batch['data'].to(self.device)
         labels = batch['labels'].to(self.device)
 
-        # 前向传播
+        # 前向传播（只获取特征）
         with torch.no_grad():
-            outputs = self.model(data, task='probe')
-            loss = self.criterion(outputs, labels)
+            features, _ = self.model(data, return_features=True)
+
+            # 使用线性分类器
+            if not hasattr(self, 'probe_classifier'):
+                self.probe_classifier = nn.Linear(features.shape[-1], labels.max().item() + 1).to(self.device)
+
+            logits = self.probe_classifier(features.mean(dim=1))
+            loss = self.criterion(logits, labels)
 
         # 计算指标
-        metrics = self.compute_metrics(outputs, labels)
+        metrics = self.compute_metrics(logits, labels)
         metrics['loss'] = loss.item()
 
         return metrics
