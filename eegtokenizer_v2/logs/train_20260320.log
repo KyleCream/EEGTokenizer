@@ -914,3 +914,5 @@ Used Annotations descriptions: ['1023', '1072', '276', '277', '32766', '768', '7
 2026-03-20 00:26:33,702 - __main__ - WARNING - 请手动推送: git push origin main
 usage: train.py [-h] --config CONFIG [--gpu GPU] [--debug]
 train.py: error: the following arguments are required: --config
+usage: train.py [-h] --config CONFIG [--gpu GPU] [--debug]
+train.py: error: the following arguments are required: --config
