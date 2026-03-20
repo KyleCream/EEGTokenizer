@@ -1,0 +1,28 @@
+2026-03-20 21:04:40,159 - __main__ - INFO - 日志文件: /home/zengkai/eegtokenizer_v2/logs/train.log
+2026-03-20 21:04:40,159 - __main__ - INFO - ============================================================
+2026-03-20 21:04:40,159 - __main__ - INFO - EEGTokenizer 训练开始
+2026-03-20 21:04:40,159 - __main__ - INFO - ============================================================
+2026-03-20 21:04:40,159 - __main__ - INFO - 配置文件: eegtokenizer_v2/configs/experiments.yaml::adc_4bit_probe
+2026-03-20 21:04:40,159 - __main__ - INFO - GPU: cuda:0
+2026-03-20 21:04:40,159 - __main__ - INFO - 调试模式: False
+2026-03-20 21:04:40,159 - __main__ - INFO - 任务类型: probe
+2026-03-20 21:04:40,159 - __main__ - INFO - ============================================================
+2026-03-20 21:04:40,159 - __main__ - INFO - 创建模型...
+2026-03-20 21:04:40,160 - eegtokenizer_v2.tokenizers.adc - INFO - ADC Tokenizer 初始化完成
+2026-03-20 21:04:40,160 - eegtokenizer_v2.tokenizers.adc - INFO -   window_length: 250, step_length: 125
+2026-03-20 21:04:40,160 - eegtokenizer_v2.tokenizers.adc - INFO -   num_bits: 4 (16 级)
+2026-03-20 21:04:40,160 - eegtokenizer_v2.tokenizers.adc - INFO -   quant_type: scalar, agg_type: mean
+2026-03-20 21:04:40,160 - eegtokenizer_v2.tokenizers.adc - INFO -   d_model: 24
+2026-03-20 21:04:40,165 - eegtokenizer_v2.models.classifier - INFO - EEGClassifier 初始化完成
+2026-03-20 21:04:40,165 - eegtokenizer_v2.models.classifier - INFO -   num_classes: 4
+2026-03-20 21:04:40,165 - eegtokenizer_v2.models.classifier - INFO -   nhead: 8, num_layers: 2
+2026-03-20 21:04:40,165 - eegtokenizer_v2.models.classifier - INFO -   dropout: 0.1
+2026-03-20 21:04:40,165 - __main__ - INFO - 模型: ADC + ADCTokenizer
+2026-03-20 21:04:40,165 - __main__ - INFO - 加载数据...
+2026-03-20 21:04:40,165 - __main__ - ERROR - ❌ 训练失败: EEGDataLoader.__init__() got an unexpected keyword argument 'data_mode'
+2026-03-20 21:04:40,166 - __main__ - ERROR - Traceback (most recent call last):
+  File "/home/zengkai/EEGTokenizer/train.py", line 181, in main
+    data_loader = EEGDataLoader(
+                  ^^^^^^^^^^^^^^
+TypeError: EEGDataLoader.__init__() got an unexpected keyword argument 'data_mode'
+

@@ -1,0 +1,20 @@
+[2026-03-20 21:04:32] ========================================
+[2026-03-20 21:04:32] 自动训练脚本启动（标记文件控制）
+[2026-03-20 21:04:32] ========================================
+[2026-03-20 21:04:32] 拉取最新代码...
+来自 github.com:KyleCream/EEGTokenizer
+ * branch            main       -> FETCH_HEAD
+已经是最新的。
+[2026-03-20 21:04:36] 代码更新完成
+[2026-03-20 21:04:36] 检测到训练标记文件，准备运行训练...
+[2026-03-20 21:04:36] 配置名称: adc_4bit_probe
+[2026-03-20 21:04:36] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit_probe
+[2026-03-20 21:04:36] 代码更新完成
+[2026-03-20 21:04:36] 激活 Conda 环境: mamba_cuda121
+[2026-03-20 21:04:37] Python 版本: Python 3.11.11
+[2026-03-20 21:04:37] Python 路径: /home/zengkai/conda/envs/mamba_cuda121/bin/python
+[2026-03-20 21:04:37] 开始训练...
+[2026-03-20 21:04:37] 训练脚本: train.py
+[2026-03-20 21:04:37] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit_probe
+[2026-03-20 21:04:40] 错误：训练失败，查看日志: /home/zengkai/EEGTokenizer/eegtokenizer_v2/logs/train.log
+[2026-03-20 21:04:40] 保留训练标记文件以便下次重试
