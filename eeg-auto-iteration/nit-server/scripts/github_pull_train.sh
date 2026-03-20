@@ -67,17 +67,7 @@ else
     TRAIN_ARGS="--config $TRAIN_CONFIG"
 fi
 
-if [ $? -ne 0 ]; then
-    log "错误：git pull 失败"
-    exit 1
-fi
-
 log "代码更新完成"
-
-# 检查标记文件
-if [ ! -f "$TRAINING_FLAG" ]; then
-    log "没有检测到训练标记文件 ($TRAINING_FLAG)，退出"
-    exit 0
 
 # 激活 Conda 环境
 log "激活 Conda 环境: $CONDA_ENV_NAME"
