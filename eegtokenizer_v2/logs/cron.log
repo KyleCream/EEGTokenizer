@@ -48,3 +48,32 @@ Fast-forward
 [2026-03-20 21:06:48] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit_probe
 [2026-03-20 21:06:52] 错误：训练失败，查看日志: /home/zengkai/EEGTokenizer/eegtokenizer_v2/logs/train.log
 [2026-03-20 21:06:52] 保留训练标记文件以便下次重试
+[main 951d0b9] 训练失败日志: 2026-03-20 21:06:52
+ 2 files changed, 63 insertions(+)
+To github.com:KyleCream/EEGTokenizer.git
+   fc3df4e..951d0b9  main -> main
+[2026-03-20 21:09:02] ========================================
+[2026-03-20 21:09:02] 自动训练脚本启动（标记文件控制）
+[2026-03-20 21:09:02] ========================================
+[2026-03-20 21:09:02] 拉取最新代码...
+来自 github.com:KyleCream/EEGTokenizer
+ * branch            main       -> FETCH_HEAD
+   951d0b9..6cd2eda  main       -> origin/main
+更新 951d0b9..6cd2eda
+Fast-forward
+ train.py | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+[2026-03-20 21:09:07] 代码更新完成
+[2026-03-20 21:09:07] 检测到训练标记文件，准备运行训练...
+[2026-03-20 21:09:07] 配置名称: adc_4bit_probe
+[2026-03-20 21:09:07] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit_probe
+[2026-03-20 21:09:07] 代码更新完成
+[2026-03-20 21:09:07] 激活 Conda 环境: mamba_cuda121
+[2026-03-20 21:09:07] Python 版本: Python 3.11.11
+[2026-03-20 21:09:07] Python 路径: /home/zengkai/conda/envs/mamba_cuda121/bin/python
+[2026-03-20 21:09:07] 开始训练...
+[2026-03-20 21:09:07] 训练脚本: train.py
+[2026-03-20 21:09:07] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit_probe
+[2026-03-20 21:09:20] 训练完成
+[2026-03-20 21:09:20] 删除训练标记文件
+[2026-03-20 21:09:20] 推送训练日志到 GitHub...
