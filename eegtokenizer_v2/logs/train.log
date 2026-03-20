@@ -1,1 +1,287 @@
 训练开始时间: Fri Mar 20 09:42:48 PM CST 2026
+2026-03-20 21:44:28,844 - __main__ - INFO - 日志文件: /home/zengkai/eegtokenizer_v2/logs/train.log (覆盖式)
+2026-03-20 21:44:28,844 - __main__ - INFO - ============================================================
+2026-03-20 21:44:28,845 - __main__ - INFO - ============================================================
+2026-03-20 21:44:28,845 - __main__ - INFO - EEGTokenizer 训练开始
+2026-03-20 21:44:28,845 - __main__ - INFO - ============================================================
+2026-03-20 21:44:28,845 - __main__ - INFO - 配置文件: eegtokenizer_v2/configs/experiments.yaml::adc_4bit
+2026-03-20 21:44:28,845 - __main__ - INFO - GPU: cuda:0
+2026-03-20 21:44:28,845 - __main__ - INFO - 调试模式: False
+2026-03-20 21:44:28,845 - __main__ - INFO - 任务类型: classification
+2026-03-20 21:44:28,845 - __main__ - INFO - ============================================================
+2026-03-20 21:44:28,845 - __main__ - INFO - 创建模型...
+2026-03-20 21:44:28,845 - eegtokenizer_v2.tokenizers.adc - INFO - ADC Tokenizer 初始化完成
+2026-03-20 21:44:28,845 - eegtokenizer_v2.tokenizers.adc - INFO -   window_length: 250, step_length: 125
+2026-03-20 21:44:28,845 - eegtokenizer_v2.tokenizers.adc - INFO -   num_bits: 4 (16 级)
+2026-03-20 21:44:28,845 - eegtokenizer_v2.tokenizers.adc - INFO -   quant_type: scalar, agg_type: mean
+2026-03-20 21:44:28,845 - eegtokenizer_v2.tokenizers.adc - INFO -   d_model: 24
+2026-03-20 21:44:28,850 - eegtokenizer_v2.models.classifier - INFO - EEGClassifier 初始化完成
+2026-03-20 21:44:28,850 - eegtokenizer_v2.models.classifier - INFO -   num_classes: 4
+2026-03-20 21:44:28,850 - eegtokenizer_v2.models.classifier - INFO -   nhead: 8, num_layers: 2
+2026-03-20 21:44:28,850 - eegtokenizer_v2.models.classifier - INFO -   dropout: 0.1
+2026-03-20 21:44:28,850 - __main__ - INFO - 模型: ADC + ADCTokenizer
+2026-03-20 21:44:28,850 - __main__ - INFO - 加载数据...
+2026-03-20 21:44:28,850 - eegtokenizer_v2.data.loader - INFO - EEGDataLoader 初始化
+2026-03-20 21:44:28,850 - eegtokenizer_v2.data.loader - INFO -   data_dir: /home/zengkai/model_compare/data/BNCI2014_001
+2026-03-20 21:44:28,850 - eegtokenizer_v2.data.loader - INFO -   subject_id: A01
+2026-03-20 21:44:28,850 - eegtokenizer_v2.data.loader - INFO -   sessions: train
+2026-03-20 21:44:28,850 - eegtokenizer_v2.data.loader - INFO -   win_sel: (-2.0, 5.0)
+2026-03-20 21:44:28,850 - eegtokenizer_v2.data.loader - INFO - 加载训练数据 (A01T.gdf)...
+2026-03-20 21:44:28,850 - eegtokenizer_v2.data.loader - INFO - 加载训练集: /home/zengkai/model_compare/data/BNCI2014_001/A01T.gdf
+/home/zengkai/conda/envs/mamba_cuda121/lib/python3.11/contextlib.py:144: RuntimeWarning: Channel names are not unique, found duplicates for: {'EEG'}. Applying running numbers for duplicates.
+  next(self.gen)
+Used Annotations descriptions: ['1023', '1072', '276', '277', '32766', '768', '769', '770', '771', '772']
+2026-03-20 21:44:31,180 - eegtokenizer_v2.data.loader - INFO - 重采样: 1751 → 1000 个采样点
+2026-03-20 21:44:31,549 - eegtokenizer_v2.data.loader - INFO - 数据集加载完成
+2026-03-20 21:44:31,549 - eegtokenizer_v2.data.loader - INFO -   被试: A01
+2026-03-20 21:44:31,549 - eegtokenizer_v2.data.loader - INFO -   会话: train
+2026-03-20 21:44:31,549 - eegtokenizer_v2.data.loader - INFO -   形状: (288, 22, 1000)
+2026-03-20 21:44:31,549 - eegtokenizer_v2.data.loader - INFO -   标签形状: (288,)
+2026-03-20 21:44:31,549 - eegtokenizer_v2.data.loader - INFO - 加载测试数据 (A01E.gdf)...
+2026-03-20 21:44:31,550 - eegtokenizer_v2.data.loader - INFO - 加载测试集: /home/zengkai/model_compare/data/BNCI2014_001/A01E.gdf
+/home/zengkai/conda/envs/mamba_cuda121/lib/python3.11/contextlib.py:144: RuntimeWarning: Channel names are not unique, found duplicates for: {'EEG'}. Applying running numbers for duplicates.
+  next(self.gen)
+2026-03-20 21:44:32,626 - eegtokenizer_v2.data.loader - INFO - 加载测试集标签: /home/zengkai/model_compare/data/BNCI2014_001/Data sets 2a_true_labels/A01E.mat
+Used Annotations descriptions: ['1023', '1072', '276', '277', '32766', '768', '783']
+2026-03-20 21:44:32,845 - eegtokenizer_v2.data.loader - INFO - 重采样: 1751 → 1000 个采样点
+2026-03-20 21:44:33,209 - eegtokenizer_v2.data.loader - INFO - 数据集加载完成
+2026-03-20 21:44:33,209 - eegtokenizer_v2.data.loader - INFO -   被试: A01
+2026-03-20 21:44:33,209 - eegtokenizer_v2.data.loader - INFO -   会话: test
+2026-03-20 21:44:33,209 - eegtokenizer_v2.data.loader - INFO -   形状: (288, 22, 1000)
+2026-03-20 21:44:33,209 - eegtokenizer_v2.data.loader - INFO -   标签形状: (288,)
+2026-03-20 21:44:33,209 - eegtokenizer_v2.data.loader - INFO - 数据集划分:
+2026-03-20 21:44:33,209 - eegtokenizer_v2.data.loader - INFO -   训练+验证集 (A01T): 288 样本
+2026-03-20 21:44:33,209 - eegtokenizer_v2.data.loader - INFO -   测试集 (A01E): 288 样本
+2026-03-20 21:44:33,209 - eegtokenizer_v2.data.loader - INFO -   训练集: 201 (70.0%)
+2026-03-20 21:44:33,209 - eegtokenizer_v2.data.loader - INFO -   验证集: 87 (30.000000000000004%)
+2026-03-20 21:44:33,211 - eegtokenizer_v2.data.loader - INFO - 数据加载完成
+2026-03-20 21:44:33,211 - eegtokenizer_v2.data.loader - INFO -   训练集: 201 样本
+2026-03-20 21:44:33,211 - eegtokenizer_v2.data.loader - INFO -   验证集: 87 样本
+2026-03-20 21:44:33,211 - eegtokenizer_v2.data.loader - INFO -   测试集: 288 样本
+2026-03-20 21:44:33,211 - __main__ - INFO - 创建训练器...
+2026-03-20 21:44:33,447 - eegtokenizer_v2.training.tasks - INFO - 创建任务: classification
+2026-03-20 21:44:33,447 - eegtokenizer_v2.training.tasks - INFO - ClassificationTask 初始化完成
+2026-03-20 21:44:34,533 - eegtokenizer_v2.training.trainer - INFO - Trainer 初始化完成
+2026-03-20 21:44:34,533 - eegtokenizer_v2.training.trainer - INFO -   device: cuda:0
+2026-03-20 21:44:34,533 - eegtokenizer_v2.training.trainer - INFO -   task: classification
+2026-03-20 21:44:34,533 - eegtokenizer_v2.training.trainer - INFO -   save_dir: checkpoints
+2026-03-20 21:44:34,533 - __main__ - INFO - 开始训练...
+2026-03-20 21:44:34,533 - eegtokenizer_v2.training.trainer - INFO - 开始训练，共 100 个 epoch
+/home/zengkai/conda/envs/mamba_cuda121/lib/python3.11/site-packages/torch/nn/modules/transformer.py:502: UserWarning: The PyTorch API of nested tensors is in prototype stage and will change in the near future. (Triggered internally at ../aten/src/ATen/NestedTensorImpl.cpp:178.)
+  output = torch._nested_tensor_from_mask(
+2026-03-20 21:44:35,636 - eegtokenizer_v2.training.trainer - INFO - Epoch 0/100 - Train Loss: 1.3674 | Val Loss: 1.3706
+2026-03-20 21:44:35,636 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3410
+2026-03-20 21:44:35,645 - eegtokenizer_v2.training.trainer - INFO -   ✓ 保存最佳模型 (0.3410)
+2026-03-20 21:44:35,812 - eegtokenizer_v2.training.trainer - INFO - Epoch 1/100 - Train Loss: 1.3298 | Val Loss: 1.3542
+2026-03-20 21:44:35,812 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3347
+2026-03-20 21:44:36,002 - eegtokenizer_v2.training.trainer - INFO - Epoch 2/100 - Train Loss: 1.2997 | Val Loss: 1.3395
+2026-03-20 21:44:36,002 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3410
+2026-03-20 21:44:36,198 - eegtokenizer_v2.training.trainer - INFO - Epoch 3/100 - Train Loss: 1.2803 | Val Loss: 1.3422
+2026-03-20 21:44:36,198 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3243
+2026-03-20 21:44:36,375 - eegtokenizer_v2.training.trainer - INFO - Epoch 4/100 - Train Loss: 1.2771 | Val Loss: 1.3586
+2026-03-20 21:44:36,375 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3347
+2026-03-20 21:44:36,545 - eegtokenizer_v2.training.trainer - INFO - Epoch 5/100 - Train Loss: 1.2333 | Val Loss: 1.3662
+2026-03-20 21:44:36,545 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3388
+2026-03-20 21:44:36,735 - eegtokenizer_v2.training.trainer - INFO - Epoch 6/100 - Train Loss: 1.2118 | Val Loss: 1.3649
+2026-03-20 21:44:36,735 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3075
+2026-03-20 21:44:36,906 - eegtokenizer_v2.training.trainer - INFO - Epoch 7/100 - Train Loss: 1.2170 | Val Loss: 1.3486
+2026-03-20 21:44:36,906 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:37,067 - eegtokenizer_v2.training.trainer - INFO - Epoch 8/100 - Train Loss: 1.1825 | Val Loss: 1.3543
+2026-03-20 21:44:37,067 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3243
+2026-03-20 21:44:37,241 - eegtokenizer_v2.training.trainer - INFO - Epoch 9/100 - Train Loss: 1.1931 | Val Loss: 1.3615
+2026-03-20 21:44:37,241 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3533
+2026-03-20 21:44:37,249 - eegtokenizer_v2.training.trainer - INFO -   ✓ 保存最佳模型 (0.3533)
+2026-03-20 21:44:37,427 - eegtokenizer_v2.training.trainer - INFO - Epoch 10/100 - Train Loss: 1.1508 | Val Loss: 1.3701
+2026-03-20 21:44:37,427 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3388
+2026-03-20 21:44:37,614 - eegtokenizer_v2.training.trainer - INFO - Epoch 11/100 - Train Loss: 1.1496 | Val Loss: 1.3839
+2026-03-20 21:44:37,615 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3388
+2026-03-20 21:44:37,793 - eegtokenizer_v2.training.trainer - INFO - Epoch 12/100 - Train Loss: 1.1381 | Val Loss: 1.3584
+2026-03-20 21:44:37,793 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3637
+2026-03-20 21:44:37,800 - eegtokenizer_v2.training.trainer - INFO -   ✓ 保存最佳模型 (0.3637)
+2026-03-20 21:44:37,982 - eegtokenizer_v2.training.trainer - INFO - Epoch 13/100 - Train Loss: 1.1382 | Val Loss: 1.3562
+2026-03-20 21:44:37,982 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3782
+2026-03-20 21:44:37,990 - eegtokenizer_v2.training.trainer - INFO -   ✓ 保存最佳模型 (0.3782)
+2026-03-20 21:44:38,155 - eegtokenizer_v2.training.trainer - INFO - Epoch 14/100 - Train Loss: 1.1308 | Val Loss: 1.3673
+2026-03-20 21:44:38,156 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3637
+2026-03-20 21:44:38,333 - eegtokenizer_v2.training.trainer - INFO - Epoch 15/100 - Train Loss: 1.1386 | Val Loss: 1.3716
+2026-03-20 21:44:38,333 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3469
+2026-03-20 21:44:38,504 - eegtokenizer_v2.training.trainer - INFO - Epoch 16/100 - Train Loss: 1.0910 | Val Loss: 1.3643
+2026-03-20 21:44:38,504 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3428
+2026-03-20 21:44:38,663 - eegtokenizer_v2.training.trainer - INFO - Epoch 17/100 - Train Loss: 1.0622 | Val Loss: 1.3799
+2026-03-20 21:44:38,663 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3741
+2026-03-20 21:44:38,845 - eegtokenizer_v2.training.trainer - INFO - Epoch 18/100 - Train Loss: 1.0497 | Val Loss: 1.3996
+2026-03-20 21:44:38,845 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3782
+2026-03-20 21:44:38,993 - eegtokenizer_v2.training.trainer - INFO - Epoch 19/100 - Train Loss: 1.0535 | Val Loss: 1.3736
+2026-03-20 21:44:38,993 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3637
+2026-03-20 21:44:39,148 - eegtokenizer_v2.training.trainer - INFO - Epoch 20/100 - Train Loss: 1.0305 | Val Loss: 1.3804
+2026-03-20 21:44:39,148 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3428
+2026-03-20 21:44:39,316 - eegtokenizer_v2.training.trainer - INFO - Epoch 21/100 - Train Loss: 1.0257 | Val Loss: 1.3913
+2026-03-20 21:44:39,316 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3573
+2026-03-20 21:44:39,494 - eegtokenizer_v2.training.trainer - INFO - Epoch 22/100 - Train Loss: 1.0097 | Val Loss: 1.4217
+2026-03-20 21:44:39,494 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3678
+2026-03-20 21:44:39,665 - eegtokenizer_v2.training.trainer - INFO - Epoch 23/100 - Train Loss: 1.0616 | Val Loss: 1.4143
+2026-03-20 21:44:39,665 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3678
+2026-03-20 21:44:39,847 - eegtokenizer_v2.training.trainer - INFO - Epoch 24/100 - Train Loss: 1.0076 | Val Loss: 1.3858
+2026-03-20 21:44:39,847 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3139
+2026-03-20 21:44:40,027 - eegtokenizer_v2.training.trainer - INFO - Epoch 25/100 - Train Loss: 0.9956 | Val Loss: 1.3839
+2026-03-20 21:44:40,027 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3886
+2026-03-20 21:44:40,035 - eegtokenizer_v2.training.trainer - INFO -   ✓ 保存最佳模型 (0.3886)
+2026-03-20 21:44:40,212 - eegtokenizer_v2.training.trainer - INFO - Epoch 26/100 - Train Loss: 0.9866 | Val Loss: 1.3893
+2026-03-20 21:44:40,213 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3886
+2026-03-20 21:44:40,371 - eegtokenizer_v2.training.trainer - INFO - Epoch 27/100 - Train Loss: 0.9256 | Val Loss: 1.4190
+2026-03-20 21:44:40,371 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3678
+2026-03-20 21:44:40,544 - eegtokenizer_v2.training.trainer - INFO - Epoch 28/100 - Train Loss: 0.9837 | Val Loss: 1.4229
+2026-03-20 21:44:40,544 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3428
+2026-03-20 21:44:40,712 - eegtokenizer_v2.training.trainer - INFO - Epoch 29/100 - Train Loss: 0.9404 | Val Loss: 1.4239
+2026-03-20 21:44:40,712 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3782
+2026-03-20 21:44:40,875 - eegtokenizer_v2.training.trainer - INFO - Epoch 30/100 - Train Loss: 0.9306 | Val Loss: 1.4178
+2026-03-20 21:44:40,875 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3741
+2026-03-20 21:44:41,048 - eegtokenizer_v2.training.trainer - INFO - Epoch 31/100 - Train Loss: 0.9028 | Val Loss: 1.4162
+2026-03-20 21:44:41,048 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3243
+2026-03-20 21:44:41,214 - eegtokenizer_v2.training.trainer - INFO - Epoch 32/100 - Train Loss: 0.9293 | Val Loss: 1.4211
+2026-03-20 21:44:41,215 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3139
+2026-03-20 21:44:41,388 - eegtokenizer_v2.training.trainer - INFO - Epoch 33/100 - Train Loss: 0.9033 | Val Loss: 1.4281
+2026-03-20 21:44:41,388 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3492
+2026-03-20 21:44:41,540 - eegtokenizer_v2.training.trainer - INFO - Epoch 34/100 - Train Loss: 0.9063 | Val Loss: 1.4356
+2026-03-20 21:44:41,540 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3678
+2026-03-20 21:44:41,694 - eegtokenizer_v2.training.trainer - INFO - Epoch 35/100 - Train Loss: 0.9060 | Val Loss: 1.4398
+2026-03-20 21:44:41,694 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3596
+2026-03-20 21:44:41,848 - eegtokenizer_v2.training.trainer - INFO - Epoch 36/100 - Train Loss: 0.8876 | Val Loss: 1.4402
+2026-03-20 21:44:41,848 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3492
+2026-03-20 21:44:41,998 - eegtokenizer_v2.training.trainer - INFO - Epoch 37/100 - Train Loss: 0.9118 | Val Loss: 1.4388
+2026-03-20 21:44:41,998 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3492
+2026-03-20 21:44:42,176 - eegtokenizer_v2.training.trainer - INFO - Epoch 38/100 - Train Loss: 0.9061 | Val Loss: 1.4427
+2026-03-20 21:44:42,176 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3243
+2026-03-20 21:44:42,367 - eegtokenizer_v2.training.trainer - INFO - Epoch 39/100 - Train Loss: 0.8515 | Val Loss: 1.4452
+2026-03-20 21:44:42,368 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3243
+2026-03-20 21:44:42,524 - eegtokenizer_v2.training.trainer - INFO - Epoch 40/100 - Train Loss: 0.8819 | Val Loss: 1.4440
+2026-03-20 21:44:42,525 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3139
+2026-03-20 21:44:42,711 - eegtokenizer_v2.training.trainer - INFO - Epoch 41/100 - Train Loss: 0.8941 | Val Loss: 1.4425
+2026-03-20 21:44:42,711 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3139
+2026-03-20 21:44:42,874 - eegtokenizer_v2.training.trainer - INFO - Epoch 42/100 - Train Loss: 0.8628 | Val Loss: 1.4417
+2026-03-20 21:44:42,874 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:43,045 - eegtokenizer_v2.training.trainer - INFO - Epoch 43/100 - Train Loss: 0.9221 | Val Loss: 1.4424
+2026-03-20 21:44:43,045 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:43,226 - eegtokenizer_v2.training.trainer - INFO - Epoch 44/100 - Train Loss: 0.8712 | Val Loss: 1.4428
+2026-03-20 21:44:43,227 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:43,400 - eegtokenizer_v2.training.trainer - INFO - Epoch 45/100 - Train Loss: 0.8661 | Val Loss: 1.4429
+2026-03-20 21:44:43,400 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:43,567 - eegtokenizer_v2.training.trainer - INFO - Epoch 46/100 - Train Loss: 0.8933 | Val Loss: 1.4427
+2026-03-20 21:44:43,567 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:43,742 - eegtokenizer_v2.training.trainer - INFO - Epoch 47/100 - Train Loss: 0.8718 | Val Loss: 1.4429
+2026-03-20 21:44:43,742 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:43,892 - eegtokenizer_v2.training.trainer - INFO - Epoch 48/100 - Train Loss: 0.8707 | Val Loss: 1.4430
+2026-03-20 21:44:43,892 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:44,093 - eegtokenizer_v2.training.trainer - INFO - Epoch 49/100 - Train Loss: 0.9086 | Val Loss: 1.4430
+2026-03-20 21:44:44,093 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:44,266 - eegtokenizer_v2.training.trainer - INFO - Epoch 50/100 - Train Loss: 0.8905 | Val Loss: 1.4430
+2026-03-20 21:44:44,266 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:44,430 - eegtokenizer_v2.training.trainer - INFO - Epoch 51/100 - Train Loss: 0.8774 | Val Loss: 1.4431
+2026-03-20 21:44:44,430 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:44,605 - eegtokenizer_v2.training.trainer - INFO - Epoch 52/100 - Train Loss: 0.8474 | Val Loss: 1.4433
+2026-03-20 21:44:44,605 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:44,783 - eegtokenizer_v2.training.trainer - INFO - Epoch 53/100 - Train Loss: 0.8957 | Val Loss: 1.4441
+2026-03-20 21:44:44,783 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:44,961 - eegtokenizer_v2.training.trainer - INFO - Epoch 54/100 - Train Loss: 0.8756 | Val Loss: 1.4448
+2026-03-20 21:44:44,961 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:45,133 - eegtokenizer_v2.training.trainer - INFO - Epoch 55/100 - Train Loss: 0.8948 | Val Loss: 1.4460
+2026-03-20 21:44:45,133 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:45,299 - eegtokenizer_v2.training.trainer - INFO - Epoch 56/100 - Train Loss: 0.8744 | Val Loss: 1.4462
+2026-03-20 21:44:45,299 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:45,481 - eegtokenizer_v2.training.trainer - INFO - Epoch 57/100 - Train Loss: 0.8748 | Val Loss: 1.4453
+2026-03-20 21:44:45,482 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:45,665 - eegtokenizer_v2.training.trainer - INFO - Epoch 58/100 - Train Loss: 0.8704 | Val Loss: 1.4464
+2026-03-20 21:44:45,665 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:45,818 - eegtokenizer_v2.training.trainer - INFO - Epoch 59/100 - Train Loss: 0.8838 | Val Loss: 1.4477
+2026-03-20 21:44:45,818 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:46,002 - eegtokenizer_v2.training.trainer - INFO - Epoch 60/100 - Train Loss: 0.8968 | Val Loss: 1.4457
+2026-03-20 21:44:46,002 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:46,179 - eegtokenizer_v2.training.trainer - INFO - Epoch 61/100 - Train Loss: 0.8442 | Val Loss: 1.4432
+2026-03-20 21:44:46,180 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3284
+2026-03-20 21:44:46,361 - eegtokenizer_v2.training.trainer - INFO - Epoch 62/100 - Train Loss: 0.8708 | Val Loss: 1.4483
+2026-03-20 21:44:46,361 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3388
+2026-03-20 21:44:46,539 - eegtokenizer_v2.training.trainer - INFO - Epoch 63/100 - Train Loss: 0.8415 | Val Loss: 1.4563
+2026-03-20 21:44:46,539 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3533
+2026-03-20 21:44:46,710 - eegtokenizer_v2.training.trainer - INFO - Epoch 64/100 - Train Loss: 0.8465 | Val Loss: 1.4627
+2026-03-20 21:44:46,710 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3637
+2026-03-20 21:44:46,893 - eegtokenizer_v2.training.trainer - INFO - Epoch 65/100 - Train Loss: 0.8477 | Val Loss: 1.4605
+2026-03-20 21:44:46,893 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3139
+2026-03-20 21:44:47,076 - eegtokenizer_v2.training.trainer - INFO - Epoch 66/100 - Train Loss: 0.8580 | Val Loss: 1.4667
+2026-03-20 21:44:47,077 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3388
+2026-03-20 21:44:47,247 - eegtokenizer_v2.training.trainer - INFO - Epoch 67/100 - Train Loss: 0.8518 | Val Loss: 1.4711
+2026-03-20 21:44:47,248 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3388
+2026-03-20 21:44:47,433 - eegtokenizer_v2.training.trainer - INFO - Epoch 68/100 - Train Loss: 0.8461 | Val Loss: 1.4758
+2026-03-20 21:44:47,433 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3533
+2026-03-20 21:44:47,605 - eegtokenizer_v2.training.trainer - INFO - Epoch 69/100 - Train Loss: 0.8392 | Val Loss: 1.4950
+2026-03-20 21:44:47,605 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3782
+2026-03-20 21:44:47,780 - eegtokenizer_v2.training.trainer - INFO - Epoch 70/100 - Train Loss: 0.8402 | Val Loss: 1.4739
+2026-03-20 21:44:47,781 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3886
+2026-03-20 21:44:47,959 - eegtokenizer_v2.training.trainer - INFO - Epoch 71/100 - Train Loss: 0.7984 | Val Loss: 1.5080
+2026-03-20 21:44:47,959 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3573
+2026-03-20 21:44:48,137 - eegtokenizer_v2.training.trainer - INFO - Epoch 72/100 - Train Loss: 0.8346 | Val Loss: 1.5079
+2026-03-20 21:44:48,137 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3469
+2026-03-20 21:44:48,305 - eegtokenizer_v2.training.trainer - INFO - Epoch 73/100 - Train Loss: 0.7811 | Val Loss: 1.5045
+2026-03-20 21:44:48,305 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3533
+2026-03-20 21:44:48,485 - eegtokenizer_v2.training.trainer - INFO - Epoch 74/100 - Train Loss: 0.7839 | Val Loss: 1.4893
+2026-03-20 21:44:48,485 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3428
+2026-03-20 21:44:48,656 - eegtokenizer_v2.training.trainer - INFO - Epoch 75/100 - Train Loss: 0.8134 | Val Loss: 1.5216
+2026-03-20 21:44:48,656 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3678
+2026-03-20 21:44:48,813 - eegtokenizer_v2.training.trainer - INFO - Epoch 76/100 - Train Loss: 0.7708 | Val Loss: 1.5510
+2026-03-20 21:44:48,813 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3388
+2026-03-20 21:44:48,991 - eegtokenizer_v2.training.trainer - INFO - Epoch 77/100 - Train Loss: 0.7546 | Val Loss: 1.5504
+2026-03-20 21:44:48,991 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3718
+2026-03-20 21:44:49,168 - eegtokenizer_v2.training.trainer - INFO - Epoch 78/100 - Train Loss: 0.7346 | Val Loss: 1.5563
+2026-03-20 21:44:49,168 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3927
+2026-03-20 21:44:49,177 - eegtokenizer_v2.training.trainer - INFO -   ✓ 保存最佳模型 (0.3927)
+2026-03-20 21:44:49,363 - eegtokenizer_v2.training.trainer - INFO - Epoch 79/100 - Train Loss: 0.7004 | Val Loss: 1.5862
+2026-03-20 21:44:49,363 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3927
+2026-03-20 21:44:49,545 - eegtokenizer_v2.training.trainer - INFO - Epoch 80/100 - Train Loss: 0.6831 | Val Loss: 1.5817
+2026-03-20 21:44:49,546 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3718
+2026-03-20 21:44:49,715 - eegtokenizer_v2.training.trainer - INFO - Epoch 81/100 - Train Loss: 0.6474 | Val Loss: 1.5996
+2026-03-20 21:44:49,715 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3886
+2026-03-20 21:44:49,898 - eegtokenizer_v2.training.trainer - INFO - Epoch 82/100 - Train Loss: 0.6805 | Val Loss: 1.6101
+2026-03-20 21:44:49,898 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3324
+2026-03-20 21:44:50,073 - eegtokenizer_v2.training.trainer - INFO - Epoch 83/100 - Train Loss: 0.6427 | Val Loss: 1.6816
+2026-03-20 21:44:50,073 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3492
+2026-03-20 21:44:50,252 - eegtokenizer_v2.training.trainer - INFO - Epoch 84/100 - Train Loss: 0.6320 | Val Loss: 1.6419
+2026-03-20 21:44:50,252 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.2971
+2026-03-20 21:44:50,431 - eegtokenizer_v2.training.trainer - INFO - Epoch 85/100 - Train Loss: 0.5994 | Val Loss: 1.8074
+2026-03-20 21:44:50,431 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3034
+2026-03-20 21:44:50,604 - eegtokenizer_v2.training.trainer - INFO - Epoch 86/100 - Train Loss: 0.6114 | Val Loss: 1.7210
+2026-03-20 21:44:50,604 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.2971
+2026-03-20 21:44:50,758 - eegtokenizer_v2.training.trainer - INFO - Epoch 87/100 - Train Loss: 0.5351 | Val Loss: 1.7851
+2026-03-20 21:44:50,758 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3075
+2026-03-20 21:44:50,933 - eegtokenizer_v2.training.trainer - INFO - Epoch 88/100 - Train Loss: 0.4941 | Val Loss: 1.8327
+2026-03-20 21:44:50,933 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3637
+2026-03-20 21:44:51,108 - eegtokenizer_v2.training.trainer - INFO - Epoch 89/100 - Train Loss: 0.4790 | Val Loss: 1.8154
+2026-03-20 21:44:51,108 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.2785
+2026-03-20 21:44:51,280 - eegtokenizer_v2.training.trainer - INFO - Epoch 90/100 - Train Loss: 0.4592 | Val Loss: 1.8983
+2026-03-20 21:44:51,280 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3075
+2026-03-20 21:44:51,464 - eegtokenizer_v2.training.trainer - INFO - Epoch 91/100 - Train Loss: 0.4454 | Val Loss: 1.9040
+2026-03-20 21:44:51,464 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.2971
+2026-03-20 21:44:51,640 - eegtokenizer_v2.training.trainer - INFO - Epoch 92/100 - Train Loss: 0.3926 | Val Loss: 1.9435
+2026-03-20 21:44:51,641 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3139
+2026-03-20 21:44:51,821 - eegtokenizer_v2.training.trainer - INFO - Epoch 93/100 - Train Loss: 0.3628 | Val Loss: 2.0102
+2026-03-20 21:44:51,821 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.2826
+2026-03-20 21:44:52,008 - eegtokenizer_v2.training.trainer - INFO - Epoch 94/100 - Train Loss: 0.3493 | Val Loss: 2.0498
+2026-03-20 21:44:52,008 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.2826
+2026-03-20 21:44:52,183 - eegtokenizer_v2.training.trainer - INFO - Epoch 95/100 - Train Loss: 0.3247 | Val Loss: 2.0982
+2026-03-20 21:44:52,183 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.2826
+2026-03-20 21:44:52,372 - eegtokenizer_v2.training.trainer - INFO - Epoch 96/100 - Train Loss: 0.2970 | Val Loss: 2.1099
+2026-03-20 21:44:52,372 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3139
+2026-03-20 21:44:52,549 - eegtokenizer_v2.training.trainer - INFO - Epoch 97/100 - Train Loss: 0.2728 | Val Loss: 2.1620
+2026-03-20 21:44:52,550 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3220
+2026-03-20 21:44:52,717 - eegtokenizer_v2.training.trainer - INFO - Epoch 98/100 - Train Loss: 0.2567 | Val Loss: 2.1975
+2026-03-20 21:44:52,717 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.2930
+2026-03-20 21:44:52,898 - eegtokenizer_v2.training.trainer - INFO - Epoch 99/100 - Train Loss: 0.2434 | Val Loss: 2.2359
+2026-03-20 21:44:52,898 - eegtokenizer_v2.training.trainer - INFO -   Val Acc: 0.3075
+2026-03-20 21:44:52,900 - eegtokenizer_v2.training.trainer - INFO - 训练历史已保存: checkpoints/training_history.json
+2026-03-20 21:44:52,900 - eegtokenizer_v2.training.trainer - INFO - 训练完成！
+2026-03-20 21:44:52,900 - __main__ - INFO - ============================================================
+2026-03-20 21:44:52,900 - __main__ - INFO - ✅ 训练完成！
+2026-03-20 21:44:52,900 - __main__ - INFO - 最佳指标: 0.3927
+2026-03-20 21:44:52,900 - __main__ - INFO - 检查点保存位置: checkpoints
+2026-03-20 21:44:52,900 - __main__ - INFO - ============================================================
+2026-03-20 21:44:52,900 - eegtokenizer_v2.training.trainer - INFO - 自动推送训练结果到 GitHub...
+2026-03-20 21:44:52,904 - eegtokenizer_v2.training.trainer - WARNING - 自动推送失败: Command '['git', 'add', 'eegtokenizer_v2/logs/']' returned non-zero exit status 128.
+2026-03-20 21:44:52,904 - eegtokenizer_v2.training.trainer - WARNING - 请手动推送: git push origin main

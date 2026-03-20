@@ -183,3 +183,52 @@ Fast-forward
 To github.com:KyleCream/EEGTokenizer.git
    0530d28..4a751e4  main -> main
 [2026-03-20 21:41:18] 推送训练日志到 GitHub...
+[main f096bb2] 训练日志: 2026-03-20 21:41:18
+ 2 files changed, 335 insertions(+)
+To github.com:KyleCream/EEGTokenizer.git
+   4a751e4..f096bb2  main -> main
+[2026-03-20 21:41:23] 推送成功
+[2026-03-20 21:41:23] ========================================
+[2026-03-20 21:41:23] 脚本执行完成
+[2026-03-20 21:41:23] ========================================
+[2026-03-20 21:43:41] ========================================
+[2026-03-20 21:43:41] 自动训练脚本启动（标记文件控制）
+[2026-03-20 21:43:41] ========================================
+[2026-03-20 21:43:41] 拉取最新代码...
+来自 github.com:KyleCream/EEGTokenizer
+ * branch            main       -> FETCH_HEAD
+   f096bb2..caab2ce  main       -> origin/main
+更新 f096bb2..caab2ce
+Fast-forward
+ eegtokenizer_v2/logs/train.log | 23241 +--------------------------------------
+ 1 file changed, 1 insertion(+), 23240 deletions(-)
+[2026-03-20 21:43:46] 代码更新完成
+[2026-03-20 21:43:46] 训练标记为 'idle'，不进行训练
+[2026-03-20 21:44:20] ========================================
+[2026-03-20 21:44:20] 自动训练脚本启动（标记文件控制）
+[2026-03-20 21:44:20] ========================================
+[2026-03-20 21:44:20] 拉取最新代码...
+来自 github.com:KyleCream/EEGTokenizer
+ * branch            main       -> FETCH_HEAD
+   caab2ce..31a6a65  main       -> origin/main
+更新 caab2ce..31a6a65
+Fast-forward
+ .needs_training | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+[2026-03-20 21:44:25] 代码更新完成
+[2026-03-20 21:44:25] 配置名称: adc_4bit
+[2026-03-20 21:44:25] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit
+[2026-03-20 21:44:25] 代码更新完成
+[2026-03-20 21:44:25] 激活 Conda 环境: mamba_cuda121
+[2026-03-20 21:44:25] Python 版本: Python 3.11.11
+[2026-03-20 21:44:25] Python 路径: /home/zengkai/conda/envs/mamba_cuda121/bin/python
+[2026-03-20 21:44:25] 开始训练...
+[2026-03-20 21:44:25] 训练脚本: train.py
+[2026-03-20 21:44:25] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit
+[2026-03-20 21:44:54] 训练完成
+[2026-03-20 21:44:54] 设置训练标记为 idle
+[main 639c28e] 训练完成: adc_4bit
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+To github.com:KyleCream/EEGTokenizer.git
+   31a6a65..639c28e  main -> main
+[2026-03-20 21:44:59] 推送训练日志到 GitHub...
