@@ -250,9 +250,8 @@ class Trainer:
         }, checkpoint_path)
 
     def _save_training_history(self):
-        """保存训练历史"""
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        history_path = self.save_dir / f'training_history_{timestamp}.json'
+        """保存训练历史（覆盖式更新）"""
+        history_path = self.save_dir / 'training_history.json'
 
         with open(history_path, 'w') as f:
             json.dump(self.training_history, f, indent=2)
