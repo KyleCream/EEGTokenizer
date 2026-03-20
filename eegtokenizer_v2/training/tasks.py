@@ -214,6 +214,15 @@ class ProbeTask(BaseTask):
                 param.requires_grad = False
             logger.info("Tokenizer 已冻结（探针任务）")
 
+        # 创建固定的线性分类器（4类）
+        self.probe_classifier = None
+
+    def _get_classifier(self, feature_dim: int, num_classes: int):
+        """延迟创建分类器，确保维度正确"""
+        if self.probe_classifier is None:
+            self.probe_classifier = nn.Linear(feature_dim, num_classes).to(self.device)
+            logger.info(f"创建探针分类器: {feature_dim} → {num_classes}")
+
     def _create_criterion(self) -> nn.Module:
         return nn.CrossEntropyLoss()
 
@@ -233,11 +242,16 @@ class ProbeTask(BaseTask):
         # 前向传播（只获取特征，不训练 tokenizer）
         features, _ = self.model(data, return_features=True)
 
-        # 使用简单的线性分类器
-        if not hasattr(self, 'probe_classifier'):
-            self.probe_classifier = nn.Linear(features.shape[-1], labels.max().item() + 1).to(self.device)
+        # 获取特征维度和类别数
+        batch_size, n_patches, feature_dim = features.shape
+        num_classes = labels.max().item() + 1  # 标签是 0-3
 
-        logits = self.probe_classifier(features.mean(dim=1))  # 全局平均池化
+        # 创建分类器
+        self._get_classifier(feature_dim, num_classes)
+
+        # 全局平均池化
+        pooled = features.mean(dim=1)  # (batch, feature_dim)
+        logits = self.probe_classifier(pooled)
         loss = self.criterion(logits, labels)
 
         return {'loss': loss, 'outputs': logits, 'labels': labels}
@@ -259,11 +273,16 @@ class ProbeTask(BaseTask):
         with torch.no_grad():
             features, _ = self.model(data, return_features=True)
 
-            # 使用线性分类器
-            if not hasattr(self, 'probe_classifier'):
-                self.probe_classifier = nn.Linear(features.shape[-1], labels.max().item() + 1).to(self.device)
+            # 获取特征维度和类别数
+            batch_size, n_patches, feature_dim = features.shape
+            num_classes = labels.max().item() + 1
 
-            logits = self.probe_classifier(features.mean(dim=1))
+            # 创建分类器
+            self._get_classifier(feature_dim, num_classes)
+
+            # 全局平均池化
+            pooled = features.mean(dim=1)
+            logits = self.probe_classifier(pooled)
             loss = self.criterion(logits, labels)
 
         # 计算指标

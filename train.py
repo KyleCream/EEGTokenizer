@@ -52,6 +52,12 @@ def setup_logging(log_dir: str):
     # 清空日志文件（覆盖式）
     if log_file.exists():
         log_file.unlink()
+        log_file.touch()
+
+    # 重置所有现有的日志处理器
+    root_logger = logging.getLogger()
+    for handler in root_logger.handlers[:]:
+        root_logger.removeHandler(handler)
 
     logging.basicConfig(
         level=logging.INFO,
