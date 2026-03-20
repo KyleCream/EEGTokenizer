@@ -180,8 +180,7 @@ def main():
         logger.info("加载数据...")
         data_loader = EEGDataLoader(
             data_dir=config['data']['data_dir'],
-            subject_id=config['data']['subject_id'],
-            data_mode=config['data']['data_mode']
+            subject_id=config['data']['subject_id']
         )
 
         # 根据任务类型加载数据
