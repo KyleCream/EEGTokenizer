@@ -1,0 +1,2 @@
+usage: train.py [-h] --config CONFIG [--gpu GPU] [--debug]
+train.py: error: the following arguments are required: --config
