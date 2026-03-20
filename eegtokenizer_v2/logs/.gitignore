@@ -1,5 +1,11 @@
-# 日志文件
-*.log
+# 忽略带时间戳的日志文件（增量式，旧版本）
+train_*.log
+*_train_*.log
+cron_*.log
+
+# 保留固定名称的日志文件（覆盖式，新版本）
+!train.log
+!cron.log
 
 # 保留 README 和 .gitkeep
 !README.md
