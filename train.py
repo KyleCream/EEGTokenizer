@@ -49,28 +49,33 @@ def setup_logging(log_dir: str):
     # 固定日志文件名（覆盖式）
     log_file = log_dir / 'train.log'
 
-    # 清空日志文件（覆盖式）
-    if log_file.exists():
-        log_file.unlink()
-        log_file.touch()
+    # 强制清空日志文件（确保覆盖式）
+    with open(log_file, 'w') as f:
+        f.write(f"训练开始时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
 
     # 重置所有现有的日志处理器
     root_logger = logging.getLogger()
     for handler in root_logger.handlers[:]:
         root_logger.removeHandler(handler)
 
+    # 清空所有已有的 logger 配置
+    for name in list(logging.Logger.manager.loggerDict.keys()):
+        if name.startswith('eegtokenizer_v2'):
+            del logging.Logger.manager.loggerDict[name]
+
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(log_file, mode='w'),  # mode='w' 覆盖模式
+            logging.FileHandler(log_file, mode='a'),  # 追加模式（因为已清空）
             logging.StreamHandler()
         ],
         force=True
     )
 
     logger = logging.getLogger(__name__)
-    logger.info(f"日志文件: {log_file}")
+    logger.info(f"日志文件: {log_file} (覆盖式)")
+    logger.info("="*60)
 
     return logger
 
