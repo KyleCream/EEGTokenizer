@@ -30,6 +30,17 @@ cd "$PROJECT_DIR" || {
 # 标记文件路径
 TRAINING_FLAG=".needs_training"
 
+# 先拉取最新代码（无论是否有标志文件）
+log "拉取最新代码..."
+git pull origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
+
+if [ $? -ne 0 ]; then
+    log "错误：git pull 失败"
+    exit 1
+fi
+
+log "代码更新完成"
+
 # 检查标记文件
 if [ ! -f "$TRAINING_FLAG" ]; then
     log "没有检测到训练标记文件 ($TRAINING_FLAG)，退出"
@@ -46,10 +57,6 @@ if [ -n "$TRAINING_PARAMS" ]; then
     # 如果标记文件有内容，使用其中的参数
     TRAIN_ARGS="$TRAINING_PARAMS"
 fi
-
-# 拉取最新代码
-log "拉取最新代码..."
-git pull origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
 
 if [ $? -ne 0 ]; then
     log "错误：git pull 失败"
@@ -151,6 +158,7 @@ else
         fi
     fi
 
+    # 失败时不删除标志文件，以便下次重试
     exit 1
 fi
 
