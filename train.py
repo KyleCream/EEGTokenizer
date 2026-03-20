@@ -42,12 +42,12 @@ from eegtokenizer_v2.training.trainer import Trainer
 
 # 配置日志
 def setup_logging(log_dir: str):
-    """配置日志"""
+    """配置日志（覆盖式更新）"""
     log_dir = Path(log_dir)
     log_dir.mkdir(parents=True, exist_ok=True)
 
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_file = log_dir / f'train_{timestamp}.log'
+    # 固定日志文件名（覆盖式）
+    log_file = log_dir / 'train.log'
 
     logging.basicConfig(
         level=logging.INFO,
