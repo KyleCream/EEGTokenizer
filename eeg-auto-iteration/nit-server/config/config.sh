@@ -86,11 +86,11 @@ WIN_TMAX=1.0
 LOG_DIR="$PROJECT_DIR/eegtokenizer_v2/logs"
 mkdir -p "$LOG_DIR"
 
-# 训练日志文件
-TRAINING_LOG="$LOG_DIR/train_$(date +%Y%m%d).log"
+# 训练日志文件（覆盖式更新）
+TRAINING_LOG="$LOG_DIR/train.log"
 
-# Cron 日志文件 (也在项目内,与训练日志放一起)
-CRON_LOG="$LOG_DIR/cron_$(date +%Y%m%d).log"
+# Cron 日志文件（覆盖式更新）
+CRON_LOG="$LOG_DIR/cron.log"
 
 # ==================== Cron 配置 ====================
 # Cron 轮询配置
