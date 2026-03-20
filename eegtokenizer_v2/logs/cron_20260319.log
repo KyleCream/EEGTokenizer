@@ -1,0 +1,10 @@
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 44: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 50: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 51: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 59: log: 未找到命令
+[2026-03-20 21:30:01] ========================================
+[2026-03-20 21:30:01] 自动训练脚本启动（标记文件控制）
+[2026-03-20 21:30:01] ========================================
+[2026-03-20 21:30:01] 拉取最新代码...
+[2026-03-20 21:30:05] 代码更新完成
+[2026-03-20 21:30:05] 没有检测到训练标记文件 (.needs_training)，退出
