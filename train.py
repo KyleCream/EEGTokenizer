@@ -49,11 +49,15 @@ def setup_logging(log_dir: str):
     # 固定日志文件名（覆盖式）
     log_file = log_dir / 'train.log'
 
+    # 清空日志文件（覆盖式）
+    if log_file.exists():
+        log_file.unlink()
+
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(log_file),
+            logging.FileHandler(log_file, mode='w'),  # mode='w' 覆盖模式
             logging.StreamHandler()
         ],
         force=True
@@ -186,17 +190,15 @@ def main():
         # 根据任务类型加载数据
         if task_type == 'reconstruction':
             # 重构任务只需要数据，不需要标签
-            train_loader, val_loader, _ = data_loader.load_single_subject(
+            train_loader, val_loader, _ = data_loader.load_data(
                 train_ratio=config['data'].get('train_ratio', 0.7),
-                val_ratio=config['data'].get('val_ratio', 0.15),
                 batch_size=config['data']['batch_size'],
                 num_workers=config['data']['num_workers']
             )
         else:
             # 分类任务和探针任务需要标签
-            train_loader, val_loader, _ = data_loader.load_single_subject(
+            train_loader, val_loader, _ = data_loader.load_data(
                 train_ratio=config['data'].get('train_ratio', 0.7),
-                val_ratio=config['data'].get('val_ratio', 0.15),
                 batch_size=config['data']['batch_size'],
                 num_workers=config['data']['num_workers']
             )
