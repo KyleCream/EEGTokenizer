@@ -47,10 +47,14 @@ if [ ! -f "$TRAINING_FLAG" ]; then
     exit 0
 fi
 
-log "检测到训练标记文件，准备运行训练..."
-
-# 读取标记文件内容（配置名称，如 adc_4bit）
+# 读取标记文件内容（配置名称）
 CONFIG_NAME=$(cat "$TRAINING_FLAG" 2>/dev/null)
+
+# 检查是否需要训练（如果内容是 "idle" 或 "done" 则不训练）
+if [ "$CONFIG_NAME" = "idle" ] || [ "$CONFIG_NAME" = "done" ]; then
+    log "训练标记为 '$CONFIG_NAME'，不进行训练"
+    exit 0
+fi
 
 if [ -n "$CONFIG_NAME" ]; then
     log "配置名称: $CONFIG_NAME"
@@ -69,6 +73,11 @@ if [ $? -ne 0 ]; then
 fi
 
 log "代码更新完成"
+
+# 检查标记文件
+if [ ! -f "$TRAINING_FLAG" ]; then
+    log "没有检测到训练标记文件 ($TRAINING_FLAG)，退出"
+    exit 0
 
 # 激活 Conda 环境
 log "激活 Conda 环境: $CONDA_ENV_NAME"
@@ -103,9 +112,12 @@ python $TRAIN_SCRIPT $TRAIN_ARGS >> "$TRAINING_LOG" 2>&1
 if [ $? -eq 0 ]; then
     log "训练完成"
 
-    # 训练成功后删除标记文件
-    log "删除训练标记文件"
-    rm -f "$TRAINING_FLAG"
+    # 训练成功后，将标记设置为 "idle"（不删除文件）
+    log "设置训练标记为 idle"
+    echo "idle" > "$TRAINING_FLAG"
+    git add "$TRAINING_FLAG"
+    git commit -m "训练完成: $CONFIG_NAME" >> "$CRON_LOG" 2>&1
+    git push origin $GIT_BRANCH >> "$CRON_LOG" 2>&1
 
     # 只推送日志（不推送 .pth 模型文件）
     log "推送训练日志到 GitHub..."
