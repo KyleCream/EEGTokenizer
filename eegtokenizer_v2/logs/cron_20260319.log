@@ -1269,3 +1269,78 @@
 [2026-03-23 12:00:17] 训练完成
 [2026-03-23 12:00:17] 设置训练标记为 idle
 [2026-03-23 12:00:20] 推送训练日志到 GitHub...
+[2026-03-23 12:00:23] 推送成功
+[2026-03-23 12:00:23] ========================================
+[2026-03-23 12:00:23] 脚本执行完成
+[2026-03-23 12:00:23] ========================================
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 44: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 50: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 51: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 56: log: 未找到命令
+[2026-03-23 12:30:01] ========================================
+[2026-03-23 12:30:02] 自动训练脚本启动（标记文件控制）
+[2026-03-23 12:30:02] ========================================
+[2026-03-23 12:30:02] 拉取最新代码...
+[2026-03-23 12:30:06] 代码更新完成
+[2026-03-23 12:30:06] 训练标记为 'idle'，不进行训练
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 44: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 50: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 51: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 56: log: 未找到命令
+[2026-03-23 13:00:01] ========================================
+[2026-03-23 13:00:01] 自动训练脚本启动（标记文件控制）
+[2026-03-23 13:00:01] ========================================
+[2026-03-23 13:00:01] 拉取最新代码...
+[2026-03-23 13:00:05] 代码更新完成
+[2026-03-23 13:00:05] 训练标记为 'idle'，不进行训练
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 44: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 50: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 51: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 56: log: 未找到命令
+[2026-03-23 13:30:01] ========================================
+[2026-03-23 13:30:01] 自动训练脚本启动（标记文件控制）
+[2026-03-23 13:30:01] ========================================
+[2026-03-23 13:30:01] 拉取最新代码...
+[2026-03-23 13:30:07] 代码更新完成
+[2026-03-23 13:30:07] 训练标记为 'idle'，不进行训练
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 44: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 50: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 51: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 56: log: 未找到命令
+[2026-03-23 14:00:01] ========================================
+[2026-03-23 14:00:01] 自动训练脚本启动（标记文件控制）
+[2026-03-23 14:00:01] ========================================
+[2026-03-23 14:00:01] 拉取最新代码...
+[2026-03-23 14:00:05] 代码更新完成
+[2026-03-23 14:00:05] 训练标记为 'idle'，不进行训练
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 44: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 50: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 51: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 56: log: 未找到命令
+[2026-03-23 14:30:01] ========================================
+[2026-03-23 14:30:01] 自动训练脚本启动（标记文件控制）
+[2026-03-23 14:30:01] ========================================
+[2026-03-23 14:30:01] 拉取最新代码...
+[2026-03-23 14:30:07] 代码更新完成
+[2026-03-23 14:30:07] 训练标记为 'idle'，不进行训练
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 44: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 50: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 51: log: 未找到命令
+/home/zengkai/EEGTokenizer/eeg-auto-iteration/nit-server/config/config.sh: 行 56: log: 未找到命令
+[2026-03-23 15:00:01] ========================================
+[2026-03-23 15:00:01] 自动训练脚本启动（标记文件控制）
+[2026-03-23 15:00:01] ========================================
+[2026-03-23 15:00:01] 拉取最新代码...
+[2026-03-23 15:00:05] 代码更新完成
+[2026-03-23 15:00:05] 配置名称: adc_4bit_probe
+[2026-03-23 15:00:05] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit_probe
+[2026-03-23 15:00:05] 代码更新完成
+[2026-03-23 15:00:05] 激活 Conda 环境: mamba_cuda121
+[2026-03-23 15:00:06] Python 版本: Python 3.11.11
+[2026-03-23 15:00:06] Python 路径: /home/zengkai/conda/envs/mamba_cuda121/bin/python
+[2026-03-23 15:00:06] 开始训练...
+[2026-03-23 15:00:06] 训练脚本: train.py
+[2026-03-23 15:00:06] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_4bit_probe
+[2026-03-23 15:00:16] 训练完成
+[2026-03-23 15:00:16] 设置训练标记为 idle
+[2026-03-23 15:00:20] 推送训练日志到 GitHub...
