@@ -240,7 +240,9 @@ class ProbeTask(BaseTask):
         labels = batch['labels'].to(self.device)
 
         # 前向传播（只获取特征，不训练 tokenizer）
-        features, _ = self.model(data, return_features=True)
+        # 直接从 tokenizer 获取特征，不经过分类器
+        with torch.no_grad():  # 冻结 tokenizer
+            features = self.model.tokenizer(data)  # (batch, n_patches, d_model)
 
         # 获取特征维度和类别数
         batch_size, n_patches, feature_dim = features.shape
@@ -271,7 +273,8 @@ class ProbeTask(BaseTask):
 
         # 前向传播（只获取特征）
         with torch.no_grad():
-            features, _ = self.model(data, return_features=True)
+            # 直接从 tokenizer 获取特征
+            features = self.model.tokenizer(data)  # (batch, n_patches, d_model)
 
             # 获取特征维度和类别数
             batch_size, n_patches, feature_dim = features.shape
