@@ -1548,3 +1548,58 @@ Fast-forward
 To github.com:KyleCream/EEGTokenizer.git
    3d5c446..778efd9  main -> main
 [2026-03-23 18:00:20] 推送训练日志到 GitHub...
+[main 2c68f2f] 训练日志: 2026-03-23 18:00:20
+ 3 files changed, 338 insertions(+)
+To github.com:KyleCream/EEGTokenizer.git
+   778efd9..2c68f2f  main -> main
+[2026-03-23 18:00:23] 推送成功
+[2026-03-23 18:00:23] ========================================
+[2026-03-23 18:00:23] 脚本执行完成
+[2026-03-23 18:00:23] ========================================
+[2026-03-23 18:30:01] ========================================
+[2026-03-23 18:30:01] 自动训练脚本启动（标记文件控制）
+[2026-03-23 18:30:01] ========================================
+[2026-03-23 18:30:01] 拉取最新代码...
+来自 github.com:KyleCream/EEGTokenizer
+ * branch            main       -> FETCH_HEAD
+已经是最新的。
+[2026-03-23 18:30:05] 代码更新完成
+[2026-03-23 18:30:05] 训练标记为 'idle'，不进行训练
+[2026-03-23 19:00:01] ========================================
+[2026-03-23 19:00:01] 自动训练脚本启动（标记文件控制）
+[2026-03-23 19:00:01] ========================================
+[2026-03-23 19:00:01] 拉取最新代码...
+来自 github.com:KyleCream/EEGTokenizer
+ * branch            main       -> FETCH_HEAD
+已经是最新的。
+[2026-03-23 19:00:06] 代码更新完成
+[2026-03-23 19:00:06] 训练标记为 'idle'，不进行训练
+[2026-03-23 19:30:01] ========================================
+[2026-03-23 19:30:01] 自动训练脚本启动（标记文件控制）
+[2026-03-23 19:30:01] ========================================
+[2026-03-23 19:30:01] 拉取最新代码...
+来自 github.com:KyleCream/EEGTokenizer
+ * branch            main       -> FETCH_HEAD
+   2c68f2f..4703319  main       -> origin/main
+更新 2c68f2f..4703319
+Fast-forward
+ .needs_training                          |  2 +-
+ eegtokenizer_v2/configs/experiments.yaml | 41 ++++++++++++++++++++++++++++++++
+ 2 files changed, 42 insertions(+), 1 deletion(-)
+[2026-03-23 19:30:08] 代码更新完成
+[2026-03-23 19:30:08] 配置名称: adc_8bit
+[2026-03-23 19:30:08] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_8bit
+[2026-03-23 19:30:08] 代码更新完成
+[2026-03-23 19:30:08] 激活 Conda 环境: mamba_cuda121
+[2026-03-23 19:30:09] Python 版本: Python 3.11.11
+[2026-03-23 19:30:09] Python 路径: /home/zengkai/conda/envs/mamba_cuda121/bin/python
+[2026-03-23 19:30:09] 开始训练...
+[2026-03-23 19:30:09] 训练脚本: train.py
+[2026-03-23 19:30:09] 训练参数: --config eegtokenizer_v2/configs/experiments.yaml::adc_8bit
+[2026-03-23 19:30:31] 训练完成
+[2026-03-23 19:30:31] 设置训练标记为 idle
+[main 814c1b5] 训练完成: adc_8bit
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+To github.com:KyleCream/EEGTokenizer.git
+   4703319..814c1b5  main -> main
+[2026-03-23 19:30:36] 推送训练日志到 GitHub...
